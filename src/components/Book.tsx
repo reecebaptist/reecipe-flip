@@ -698,31 +698,7 @@ function Book() {
     pagedContents.push([]);
   }
 
-  // Contents start index in the flipbook:
-  // 0 Cover, 1 Blank, 2 Foreword, contents start at 3
-  const contentsStartIndex = 3;
-
-  const flipTo = (pageIndex: number) => {
-    const inst = bookRef.current;
-    if (!inst) return;
-    try {
-      const api = typeof inst.pageFlip === "function" ? inst.pageFlip() : inst;
-      if (typeof api.flip === "function") {
-        // pageFlip().flip appears to be 1-based relative to DOM children; adjust
-        api.flip(pageIndex - 1);
-        return;
-      }
-      if (typeof api.turnToPage === "function") {
-        api.turnToPage(pageIndex);
-        return;
-      }
-    } catch (_) {
-      // ignore and try fallback
-    }
-    try {
-      inst.flip?.(pageIndex);
-    } catch {}
-  };
+  // (Navigation to specific pages removed as requested)
 
   return (
     <HTMLFlipBook
@@ -781,14 +757,7 @@ function Book() {
                 // For now, just log to console as a placeholder
                 console.log("Add recipe clicked from contents page", idx);
               }}
-              onSelect={(globalIndex) => {
-                // globalIndex corresponds to recipe index
-                // Compute the recipe page container index in the flip book children
-                // Pages: 0 Cover,1 Blank,2 Foreword, contents..., then for each recipe: image then recipe page
-                const recipesStartIndex = 3 + pagedContents.length; // after all contents pages
-                const pageIndex = recipesStartIndex + globalIndex * 2 + 1; // jump to the text page (after image)
-                flipTo(pageIndex + 2); // use 1-based indexing
-              }}
+              // onSelect removed per request
             />
           </div>
         );
@@ -809,9 +778,7 @@ function Book() {
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
             pageNumber={index * 2 + 4}
-            onGoToContents={() =>
-              flipTo(contentsStartIndex + Math.floor(index / estPerPage))
-            }
+            // onGoToContents removed per request
           />
         </div>,
       ])}
