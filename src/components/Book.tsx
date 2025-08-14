@@ -272,13 +272,14 @@ function Book() {
       </div>
 
       {/* Contents pages (auto-split) */}
-      {pagedContents.map((items, idx) => {
+  {pagedContents.map((items, idx) => {
         const startIndex = idx * estPerPage;
         return (
           <div className="page" key={`contents-${idx}`}>
             <ContentsPage
               items={items}
               startIndex={startIndex}
+      romanIndex={idx + 1}
               onSelect={(globalIndex) => {
                 // globalIndex corresponds to recipe index
                 // Compute the recipe page container index in the flip book children

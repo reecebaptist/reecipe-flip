@@ -112,6 +112,7 @@
   align-items: flex-start;
   text-align: left;
   height: 100%;
+  position: relative; /* anchor for .page-number */
 }
 
 .recipe-title-container {
@@ -223,7 +224,8 @@
 .page-number {
   position: absolute;
   bottom: 10px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.9em;
   color: #888;
   flex-shrink: 0;
