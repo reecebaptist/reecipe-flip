@@ -261,6 +261,9 @@
 /* Contents page */
 .contents-list {
   width: 100%;
+  /* Constrain list so it never flows under the centered page-number footer */
+  max-height: calc(100% - 128px); /* TITLE_BLOCK(64) + TOP/BOTTOM padding(40) + FOOTER(24) */
+  overflow: hidden;
   padding: 0; /* align with title (same as RecipePage) */
 }
 
