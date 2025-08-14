@@ -144,8 +144,12 @@
   cursor: pointer;
   margin-left: auto; /* push to the far right of the title row */
 }
-.icon-button.contents-link:hover { background: transparent; }
-.icon-button.contents-link:active { background: transparent; }
+.icon-button.contents-link:hover {
+  background: transparent;
+}
+.icon-button.contents-link:active {
+  background: transparent;
+}
 .icon-button.contents-link .material-symbols-outlined {
   font-size: 20px;
 }
@@ -290,11 +294,10 @@
 }
 
 .contents-item .page {
-  margin-left: 8px;  
+  margin-left: 8px;
   font-variant-numeric: tabular-nums; /* align numbers neatly */
   background-color: none; /* mask dot leaders under the number */
   padding: 0 4px; /* keep a small white gutter around digits */
   box-shadow: none;
   background: none;
-  
 }

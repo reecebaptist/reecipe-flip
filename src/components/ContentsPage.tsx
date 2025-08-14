@@ -37,7 +37,12 @@ function toRoman(num: number): string {
   return res;
 }
 
-const ContentsPage: React.FC<ContentsPageProps> = ({ items, startIndex = 0, onSelect, romanIndex }) => {
+const ContentsPage: React.FC<ContentsPageProps> = ({
+  items,
+  startIndex = 0,
+  onSelect,
+  romanIndex,
+}) => {
   const hasItems = items && items.length > 0;
   const roman = romanIndex ? toRoman(romanIndex) : "";
   return (
@@ -51,7 +56,9 @@ const ContentsPage: React.FC<ContentsPageProps> = ({ items, startIndex = 0, onSe
                 <div
                   className="contents-item"
                   key={item.title}
-                  onClick={onSelect ? () => onSelect(startIndex + idx) : undefined}
+                  onClick={
+                    onSelect ? () => onSelect(startIndex + idx) : undefined
+                  }
                   role={onSelect ? "button" : undefined}
                   tabIndex={onSelect ? 0 : undefined}
                 >

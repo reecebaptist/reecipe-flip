@@ -189,7 +189,8 @@ function Book() {
   const TITLE_BLOCK = 64; // px reserved for title spacing within recipe-container
   const TOP_BOTTOM_PADDING = 40; // padding from .recipe-container
   const FOOTER_SPACE = 24; // page number area
-  const AVAILABLE = pageHeight - TITLE_BLOCK - TOP_BOTTOM_PADDING - FOOTER_SPACE;
+  const AVAILABLE =
+    pageHeight - TITLE_BLOCK - TOP_BOTTOM_PADDING - FOOTER_SPACE;
   const ROW_HEIGHT = 28; // approx height per contents row (responsive text)
   const minPerPage = 6;
   const estPerPage = Math.max(minPerPage, Math.floor(AVAILABLE / ROW_HEIGHT));
@@ -214,8 +215,8 @@ function Book() {
     try {
       const api = typeof inst.pageFlip === "function" ? inst.pageFlip() : inst;
       if (typeof api.flip === "function") {
-  // pageFlip().flip appears to be 1-based relative to DOM children; adjust
-  api.flip(pageIndex - 1);
+        // pageFlip().flip appears to be 1-based relative to DOM children; adjust
+        api.flip(pageIndex - 1);
         return;
       }
       if (typeof api.turnToPage === "function") {
@@ -272,14 +273,14 @@ function Book() {
       </div>
 
       {/* Contents pages (auto-split) */}
-  {pagedContents.map((items, idx) => {
+      {pagedContents.map((items, idx) => {
         const startIndex = idx * estPerPage;
         return (
           <div className="page" key={`contents-${idx}`}>
             <ContentsPage
               items={items}
               startIndex={startIndex}
-      romanIndex={idx + 1}
+              romanIndex={idx + 1}
               onSelect={(globalIndex) => {
                 // globalIndex corresponds to recipe index
                 // Compute the recipe page container index in the flip book children
@@ -293,7 +294,7 @@ function Book() {
         );
       })}
 
-  {recipeData.flatMap((recipe, index) => [
+      {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
           <div
             className="recipe-image-full"

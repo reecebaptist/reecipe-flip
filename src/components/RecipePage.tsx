@@ -64,9 +64,7 @@ function RecipePage({
           </div>
           <div className="recipe-details">
             <div className="detail-header">
-              <span className="material-symbols-outlined">
-                restaurant_menu
-              </span>
+              <span className="material-symbols-outlined">restaurant_menu</span>
               <h3>Ingredients</h3>
             </div>
             <ul className="recipe-ingredients">
