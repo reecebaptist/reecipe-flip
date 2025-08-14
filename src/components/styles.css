@@ -285,6 +285,32 @@
   overflow: hidden;
   padding: 0; /* align with title (same as RecipePage) */
 }
+.contents-list.is-last {
+  /* Leave extra room for the actions (button) block */
+  max-height: calc(100% - 168px); /* extra 40px reserved */
+}
+
+.contents-actions {
+  margin-top: 12px;
+}
+
+.contents-add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #1f2937;
+  cursor: pointer;
+}
+.contents-add-button:hover {
+  background: #ffffff;
+}
+.contents-add-button .material-symbols-outlined {
+  font-size: 18px;
+}
 
 .contents-item {
   display: flex;

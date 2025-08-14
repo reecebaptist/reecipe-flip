@@ -8,6 +8,8 @@ type ContentsPageProps = {
   startIndex?: number;
   onSelect?: (globalIndex: number) => void;
   romanIndex?: number; // 1-based index for roman page numbering
+  onAddRecipe?: () => void; // optional handler for Add Recipe button
+  isLastPage?: boolean; // only show Add button on the last contents page
 };
 
 function toRoman(num: number): string {
@@ -42,16 +44,19 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   startIndex = 0,
   onSelect,
   romanIndex,
+  onAddRecipe,
+  isLastPage = false,
 }) => {
   const hasItems = items && items.length > 0;
   const roman = romanIndex ? toRoman(romanIndex) : "";
+  const listClass = `contents-list${isLastPage ? " is-last" : ""}`;
   return (
     <div className="page-content contents-page">
       <div className="recipe-container">
         {hasItems && (
           <>
             <h2 className="recipe-title">Contents</h2>
-            <div className="contents-list">
+            <div className={listClass}>
               {items.map((item, idx) => (
                 <div
                   className="contents-item"
@@ -68,6 +73,26 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                 </div>
               ))}
             </div>
+            {isLastPage && onAddRecipe && (
+              <div className="contents-actions">
+                <button
+                  type="button"
+                  className="contents-add-button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onAddRecipe?.();
+                  }}
+                  aria-label="Add recipe"
+                  title="Add recipe"
+                >
+                  <span className="material-symbols-outlined" aria-hidden>
+                    add
+                  </span>
+                  <span>Add recipe</span>
+                </button>
+              </div>
+            )}
           </>
         )}
         {roman && <div className="page-number">{roman}</div>}

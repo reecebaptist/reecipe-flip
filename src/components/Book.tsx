@@ -768,12 +768,19 @@ function Book() {
       {/* Contents pages (auto-split) */}
       {pagedContents.map((items, idx) => {
         const startIndex = idx * estPerPage;
+        const isLast = idx === pagedContents.length - 1;
         return (
           <div className="page" key={`contents-${idx}`}>
             <ContentsPage
               items={items}
               startIndex={startIndex}
               romanIndex={idx + 1}
+              isLastPage={isLast}
+              onAddRecipe={() => {
+                // TODO: integrate with data flow to add a new recipe
+                // For now, just log to console as a placeholder
+                console.log("Add recipe clicked from contents page", idx);
+              }}
               onSelect={(globalIndex) => {
                 // globalIndex corresponds to recipe index
                 // Compute the recipe page container index in the flip book children
