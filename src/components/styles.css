@@ -24,6 +24,51 @@
   font-weight: bold;
 }
 
+/* Cookbook cover design */
+.cookbook-cover {
+  background: #ffffff;
+  color: #000000;
+  justify-content: space-between;
+  padding: 0; /* remove side gaps so image can span full width */
+}
+
+.cover-title {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 28px 24px; /* whitespace gap for header */
+}
+
+.cover-image {
+  width: 100%;
+  flex: 1 1 auto; /* fill remaining vertical space between header and footer */
+  min-height: 0; /* allow proper flex sizing */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.cover-year {
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 20px 24px; /* whitespace gap for footer */
+}
+
+/* Full-bleed cover variant */
+.cover-full {
+  background: #ffffff; /* underlying color while image loads */
+  padding: 0;
+}
+
+.cover-full-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 /* Styles used by RecipePage */
 .pokemon-container {
   display: flex;

@@ -1,12 +1,14 @@
 import "./styles.css";
+import coverImg from "../assets/images/cover-bg-2.avif";
 
 function CoverPage() {
   return (
-  <div className="page-content cover">
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg"
-        alt="Pokémon Logo"
-        className="pokemon-logo"
+    <div className="page-content cover-full">
+      <div
+        className="cover-full-image"
+        role="img"
+        aria-label="Cookbook cover"
+        style={{ backgroundImage: `url(${coverImg})` }}
       />
     </div>
   );
