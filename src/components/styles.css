@@ -1,12 +1,5 @@
 /* Styles used by CoverPage */
 
-.pokemon-logo {
-  width: 80%;
-  max-width: 300px;
-  margin-bottom: 20px;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-}
-
 .page-content {
   width: 100%;
   height: 100%;
@@ -23,6 +16,7 @@
   align-items: stretch; /* make children span full width */
   justify-content: flex-start; /* start from top */
   text-align: left;
+  background-color: #ffffff; /* ensure solid background to avoid underlying shading */
 }
 
 .contents-page .recipe-container {
@@ -243,5 +237,11 @@
 }
 
 .contents-item .page {
-  margin-left: 8px;
+  margin-left: 8px;  
+  font-variant-numeric: tabular-nums; /* align numbers neatly */
+  background-color: none; /* mask dot leaders under the number */
+  padding: 0 4px; /* keep a small white gutter around digits */
+  box-shadow: none;
+  background: none;
+  
 }

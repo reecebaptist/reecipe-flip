@@ -3,7 +3,7 @@ import HTMLFlipBook from "react-pageflip";
 import CoverPage from "./CoverPage";
 import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
-import ContentsPage from "./ContentsPage";
+import ContentsPage, { ContentsItem } from "./ContentsPage";
 import recipe1 from "../assets/images/cover-bg.avif";
 import recipe2 from "../assets/images/cover-bg-2.avif";
 import recipe3 from "../assets/images/cover-bg-3.avif";
@@ -139,6 +139,32 @@ function Book() {
     },
   ];
 
+  // Build Contents items from recipeData (image page is before each recipe page)
+  const contentsItems: ContentsItem[] = recipeData.map((r, index) => ({
+    title: r.title,
+    page: index * 2 + 4,
+  }));
+
+  // Split contents items into multiple pages based on available height.
+  // Estimate how many items fit per page using measured page height and a nominal row height.
+  const TITLE_BLOCK = 64; // px reserved for title spacing within recipe-container
+  const TOP_BOTTOM_PADDING = 40; // padding from .recipe-container
+  const FOOTER_SPACE = 24; // page number area
+  const AVAILABLE = pageHeight - TITLE_BLOCK - TOP_BOTTOM_PADDING - FOOTER_SPACE;
+  const ROW_HEIGHT = 28; // approx height per contents row (responsive text)
+  const minPerPage = 6;
+  const estPerPage = Math.max(minPerPage, Math.floor(AVAILABLE / ROW_HEIGHT));
+
+  const pagedContents: ContentsItem[][] = [];
+  for (let i = 0; i < contentsItems.length; i += estPerPage) {
+    pagedContents.push(contentsItems.slice(i, i + estPerPage));
+  }
+
+  // Ensure an even number of Contents pages so subsequent recipe pages form proper spreads
+  if (pagedContents.length % 2 === 1) {
+    pagedContents.push([]);
+  }
+
   return (
     <HTMLFlipBook
       width={pageWidth}
@@ -179,13 +205,12 @@ function Book() {
         <ForewordPage />
       </div>
 
-      {/* Contents pages */}
-      <div className="page">
-        <ContentsPage />
-      </div>
-      <div className="page">
-        <div className="page-content" />
-      </div>
+      {/* Contents pages (auto-split) */}
+      {pagedContents.map((items, idx) => (
+        <div className="page" key={`contents-${idx}`}>
+          <ContentsPage items={items} />
+        </div>
+      ))}
 
       {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
