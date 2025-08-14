@@ -6,6 +6,7 @@ import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
 import BackCoverPage from "./BackCoverPage";
+import AddRecipeEditor from "./AddRecipeEditor";
 import recipe1 from "../assets/images/cover-bg.avif";
 import recipe2 from "../assets/images/cover-bg-2.avif";
 import recipe3 from "../assets/images/cover-bg-3.avif";
@@ -16,6 +17,8 @@ function Book() {
   // Track viewport size for responsive sizing
   const [vw, setVw] = React.useState<number>(window.innerWidth);
   const [vh, setVh] = React.useState<number>(window.innerHeight);
+  // Add Recipe editor mode state
+  const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const onResize = () => {
@@ -700,6 +703,22 @@ function Book() {
 
   // (Navigation to specific pages removed as requested)
 
+  // Render Add Recipe Editor as a dedicated two-page spread with flipping disabled
+  if (addingRecipe) {
+    return (
+      <AddRecipeEditor
+        width={pageWidth}
+        height={pageHeight}
+        isPortrait={isPortrait}
+        onCancel={() => setAddingRecipe(false)}
+        onSave={(data) => {
+          // Placeholder for future integration
+          console.log("Saved draft:", data);
+        }}
+      />
+    );
+  }
+
   return (
     <HTMLFlipBook
       ref={bookRef}
@@ -753,9 +772,7 @@ function Book() {
               romanIndex={idx + 1}
               isLastPage={isLast}
               onAddRecipe={() => {
-                // TODO: integrate with data flow to add a new recipe
-                // For now, just log to console as a placeholder
-                console.log("Add recipe clicked from contents page", idx);
+                setAddingRecipe(true);
               }}
               // onSelect removed per request
             />
