@@ -29,7 +29,11 @@ function RecipePage({
             <button
               type="button"
               className="icon-button contents-link"
-              onClick={onGoToContents}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onGoToContents();
+              }}
               aria-label="Go to contents"
               title="Go to contents"
             >

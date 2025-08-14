@@ -60,6 +60,29 @@
   padding: 20px 24px; /* whitespace gap for footer */
 }
 
+/* Back cover */
+.back-cover {
+  background: #ffffff;
+  color: #1b2733;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.back-cover-title {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.back-cover-footer {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  color: #6b7280;
+}
+
 /* Full-bleed cover variant */
 .cover-full {
   background: #ffffff; /* underlying color while image loads */

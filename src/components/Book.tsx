@@ -4,6 +4,7 @@ import CoverPage from "./CoverPage";
 import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
+import BackCoverPage from "./BackCoverPage";
 import recipe1 from "../assets/images/cover-bg.avif";
 import recipe2 from "../assets/images/cover-bg-2.avif";
 import recipe3 from "../assets/images/cover-bg-3.avif";
@@ -166,19 +167,30 @@ function Book() {
     pagedContents.push([]);
   }
 
-  // Determine the index of the first Contents page in the sequence
-  // Pages: 0 Cover, 1 Blank, 2 Foreword, then contents pages start at 3
-  const firstContentsPageIndex = 3;
+  // Contents start index in the flipbook:
+  // 0 Cover, 1 Blank, 2 Foreword, contents start at 3
+  const contentsStartIndex = 3;
 
-  const goToFirstContents = () => {
+  const flipTo = (pageIndex: number) => {
     const inst = bookRef.current;
-    if (inst && typeof inst.pageFlip === "function") {
-      // react-pageflip v2: instance has pageFlip() that returns an API
-      inst.pageFlip().flip(firstContentsPageIndex - 1);
-    } else if (inst && typeof inst.flip === "function") {
-      // fallback if ref resolves to PageFlip API
-      inst.flip(firstContentsPageIndex);
+    if (!inst) return;
+    try {
+      const api = typeof inst.pageFlip === "function" ? inst.pageFlip() : inst;
+      if (typeof api.flip === "function") {
+  // pageFlip().flip appears to be 1-based relative to DOM children; adjust
+  api.flip(pageIndex - 1);
+        return;
+      }
+      if (typeof api.turnToPage === "function") {
+        api.turnToPage(pageIndex);
+        return;
+      }
+    } catch (_) {
+      // ignore and try fallback
     }
+    try {
+      inst.flip?.(pageIndex);
+    } catch {}
   };
 
   return (
@@ -244,10 +256,17 @@ function Book() {
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
             pageNumber={index * 2 + 4}
-    onGoToContents={goToFirstContents}
+            onGoToContents={() =>
+              flipTo(contentsStartIndex + Math.floor(index / estPerPage))
+            }
           />
         </div>,
       ])}
+
+      {/* Back cover */}
+      <div className="page" style={{ background: "#ffffff" }}>
+        <BackCoverPage />
+      </div>
     </HTMLFlipBook>
   );
 }
