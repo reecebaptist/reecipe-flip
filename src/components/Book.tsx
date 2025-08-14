@@ -1,6 +1,7 @@
 import React from "react";
 import HTMLFlipBook from "react-pageflip";
 import CoverPage from "./CoverPage";
+import AuthorPage from "./AuthorPage";
 import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
@@ -754,9 +755,9 @@ function Book() {
         <CoverPage />
       </div>
 
-      {/* Blank page after cover */}
+      {/* Author page after cover */}
       <div className="page" style={{ background: "#ffffff" }}>
-        <div className="page-content" />
+        <AuthorPage />
       </div>
 
       {/* Foreword page */}

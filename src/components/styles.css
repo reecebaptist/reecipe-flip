@@ -11,6 +11,25 @@
   text-align: center;
 }
 
+/* Author page */
+.author-page .author-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.author-page .byline {
+  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+  color: #1f2937;
+}
+.author-page .author-name {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  line-height: 1.1;
+  color: #111827;
+}
+
 /* Left-align variant for Contents page */
 .contents-page {
   align-items: stretch; /* make children span full width */
