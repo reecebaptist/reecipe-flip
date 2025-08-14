@@ -3,6 +3,10 @@ import HTMLFlipBook from "react-pageflip";
 import CoverPage from "./CoverPage";
 import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
+import recipe1 from "../assets/images/cover-bg.avif";
+import recipe2 from "../assets/images/cover-bg-2.avif";
+import recipe3 from "../assets/images/cover-bg-3.avif";
+import recipe4 from "../assets/images/cover-bg.jpg";
 
 function Book() {
   // Track viewport size for responsive sizing
@@ -64,55 +68,65 @@ function Book() {
 
   const pageWidth = Math.max(240, calcWidth);
   const pageHeight = Math.max(320, calcHeight);
-  const pokemonData = [
+  const recipeData = [
     {
-      id: "006",
-      name: "Charizard",
-      types: ["Fire", "Flying"],
-      description:
-        "Flies in search of strong opponents. Breathes extremely hot fire that melts anything, but never uses it on weaker foes.",
+      id: "1",
+      title: "Spaghetti Carbonara",
+      image: recipe1,
+      ingredients: [
+        "Spaghetti",
+        "Eggs",
+        "Pancetta",
+        "Parmesan Cheese",
+        "Black Pepper",
+      ],
+      instructions:
+        "Cook spaghetti. Fry pancetta. Mix eggs and cheese. Combine everything. Serve with pepper.",
     },
     {
-      id: "025",
-      name: "Pikachu",
-      types: ["Electric"],
-      description:
-        "When Pikachu meet, they touch tails to exchange electricity as a greeting.",
+      id: "2",
+      title: "Chicken Curry",
+      image: recipe2,
+      ingredients: [
+        "Chicken Breast",
+        "Onion",
+        "Garlic",
+        "Ginger",
+        "Coconut Milk",
+        "Curry Powder",
+      ],
+      instructions:
+        "Sauté onions, garlic, and ginger. Add chicken and cook. Stir in curry powder, then add coconut milk. Simmer until chicken is cooked through.",
     },
     {
-      id: "125",
-      name: "Electabuzz",
-      types: ["Electric"],
-      description:
-        "Often kept at power plants to regulate electricity. Competes with others to attract lightning during storms.",
+      id: "3",
+      title: "Chocolate Cake",
+      image: recipe3,
+      ingredients: [
+        "Flour",
+        "Sugar",
+        "Cocoa Powder",
+        "Baking Soda",
+        "Eggs",
+        "Milk",
+        "Vegetable Oil",
+      ],
+      instructions:
+        "Mix dry ingredients. Add wet ingredients and mix until smooth. Bake at 350°F (175°C) for 30-35 minutes.",
     },
     {
-      id: "185",
-      name: "Sudowoodo",
-      types: ["Rock"],
-      description:
-        "Despite looking like a tree, its body is more like rock. Hates water and hides when it rains.",
-    },
-    {
-      id: "448",
-      name: "Lucario",
-      types: ["Fighting", "Steel"],
-      description:
-        "Can read thoughts and movements by sensing others' aura. No foe can hide from Lucario.",
-    },
-    {
-      id: "658",
-      name: "Greninja",
-      types: ["Water", "Dark"],
-      description:
-        "Creates throwing stars from compressed water that can slice through metal when thrown at high speed.",
-    },
-    {
-      id: "491",
-      name: "Darkrai",
-      types: ["Dark"],
-      description:
-        "A legendary Pokémon that appears on moonless nights, putting people to sleep and giving them nightmares.",
+      id: "4",
+      title: "Caesar Salad",
+      image: recipe4,
+      ingredients: [
+        "Romaine Lettuce",
+        "Croutons",
+        "Parmesan Cheese",
+        "Caesar Dressing",
+        "Chicken (optional)",
+      ],
+      instructions:
+        "Toss lettuce with dressing. Top with croutons and cheese. Add grilled chicken if desired.",
     },
   ];
 
@@ -156,13 +170,13 @@ function Book() {
         <ForewordPage />
       </div>
 
-      {pokemonData.map((pokemon) => (
-        <div className="page" key={pokemon.id}>
+      {recipeData.map((recipe) => (
+        <div className="page" key={recipe.id}>
           <RecipePage
-            id={pokemon.id}
-            name={pokemon.name}
-            types={pokemon.types}
-            description={pokemon.description}
+            title={recipe.title}
+            image={recipe.image}
+            ingredients={recipe.ingredients}
+            instructions={recipe.instructions}
           />
         </div>
       ))}

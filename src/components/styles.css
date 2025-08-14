@@ -70,98 +70,42 @@
 }
 
 /* Styles used by RecipePage */
-.pokemon-container {
+.recipe-container {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 0 5px;
+  text-align: center;
 }
 
-.pokemon-container img {
-  width: 70%;
-  max-height: 200px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-}
-
-.pokemon-container img:hover {
-  transform: scale(1.05);
-}
-
-.pokemon-info {
-  width: 100%;
-}
-
-.pokemon-name {
-  font-size: clamp(1rem, 3vw, 1.8rem);
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 5px;
-}
-
-.pokemon-number {
-  font-size: clamp(0.7rem, 2vw, 1rem);
-  color: #7f8c8d;
+.recipe-title {
+  font-size: 1.5em;
   margin-bottom: 10px;
 }
 
-.pokemon-type {
+.recipe-image {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.recipe-details h3 {
+  font-size: 1.2em;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+.recipe-ingredients {
+  list-style-position: inside;
+  padding-left: 0;
+  text-align: left;
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: clamp(0.6rem, 1.5vw, 0.9rem);
-  font-weight: 500;
-  color: white;
-  margin: 0 3px 5px 3px;
 }
 
-.type-electric {
-  background-color: #f1c40f;
-}
-
-.type-ground {
-  background-color: #e67e22;
-}
-
-.type-poison {
-  background-color: #9b59b6;
-}
-
-.type-fire {
-  background-color: #e74c3c;
-}
-
-.type-flying {
-  background-color: #3498db;
-}
-
-.type-water {
-  background-color: #2980b9;
-}
-
-.type-dark {
-  background-color: #34495e;
-}
-
-.type-fighting {
-  background-color: #d35400;
-}
-
-.type-steel {
-  background-color: #7f8c8d;
-}
-
-.type-rock {
-  background-color: #9a7b4f;
-}
-
-.pokemon-description {
-  font-size: 14px;
-  color: #34495e;
-  margin-top: 8px;
-  line-height: 1.4;
+.recipe-instructions {
+  text-align: justify;
 }
 
 /* Foreword page */

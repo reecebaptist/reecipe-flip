@@ -1,31 +1,27 @@
 import "./styles.css";
 
 type RecipePageProps = {
-  id: string;
-  name: string;
-  types: string[];
-  description: string;
+  title: string;
+  image: string;
+  ingredients: string[];
+  instructions: string;
 };
 
-function RecipePage({ id, name, types, description }: RecipePageProps) {
+function RecipePage({ title, image, ingredients, instructions }: RecipePageProps) {
   return (
     <div className="page-content">
-      <div className="pokemon-container">
-        <img
-          src={`https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/${id}.png`}
-          alt={name}
-        />
-        <div className="pokemon-info">
-          <h2 className="pokemon-name">{name}</h2>
-          <p className="pokemon-number">#{id}</p>
-          <div>
-            {types.map((type) => (
-              <span key={type} className={`pokemon-type type-${type.toLowerCase()}`}>
-                {type}
-              </span>
+      <div className="recipe-container">
+        <h2 className="recipe-title">{title}</h2>
+        <img src={image} alt={title} className="recipe-image" />
+        <div className="recipe-details">
+          <h3>Ingredients</h3>
+          <ul className="recipe-ingredients">
+            {ingredients.map((ingredient) => (
+              <li key={ingredient}>{ingredient}</li>
             ))}
-          </div>
-          <p className="pokemon-description">{description}</p>
+          </ul>
+          <h3>Instructions</h3>
+          <p className="recipe-instructions">{instructions}</p>
         </div>
       </div>
     </div>
