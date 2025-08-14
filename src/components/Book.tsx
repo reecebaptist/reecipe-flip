@@ -160,8 +160,8 @@ function Book() {
     pagedContents.push(contentsItems.slice(i, i + estPerPage));
   }
 
-  // Ensure an even number of Contents pages so subsequent recipe pages form proper spreads
-  if (pagedContents.length % 2 === 1) {
+  // Ensure an even number of Contents pages only in landscape (two-page spreads)
+  if (!isPortrait && pagedContents.length % 2 === 1) {
     pagedContents.push([]);
   }
 
