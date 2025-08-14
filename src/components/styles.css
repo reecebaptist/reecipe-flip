@@ -96,6 +96,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
+  width: 100%; /* allow pushing icon to far right */
 }
 
 .recipe-title {
@@ -103,6 +104,26 @@
   font-weight: bold;
   margin-bottom: 15px;
   flex-shrink: 0;
+}
+
+.icon-button.contents-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb; /* subtle neutral border */
+  background: transparent; /* match page background */
+  color: #1f2937; /* dark neutral to match typography */
+  box-shadow: none; /* remove shadow */
+  cursor: pointer;
+  margin-left: auto; /* push to the far right of the title row */
+}
+.icon-button.contents-link:hover { background: transparent; }
+.icon-button.contents-link:active { background: transparent; }
+.icon-button.contents-link .material-symbols-outlined {
+  font-size: 20px;
 }
 
 .recipe-body {

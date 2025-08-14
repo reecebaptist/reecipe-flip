@@ -10,6 +10,7 @@ import recipe3 from "../assets/images/cover-bg-3.avif";
 import recipe4 from "../assets/images/cover-bg.jpg";
 
 function Book() {
+  const bookRef = React.useRef<any>(null);
   // Track viewport size for responsive sizing
   const [vw, setVw] = React.useState<number>(window.innerWidth);
   const [vh, setVh] = React.useState<number>(window.innerHeight);
@@ -165,8 +166,24 @@ function Book() {
     pagedContents.push([]);
   }
 
+  // Determine the index of the first Contents page in the sequence
+  // Pages: 0 Cover, 1 Blank, 2 Foreword, then contents pages start at 3
+  const firstContentsPageIndex = 3;
+
+  const goToFirstContents = () => {
+    const inst = bookRef.current;
+    if (inst && typeof inst.pageFlip === "function") {
+      // react-pageflip v2: instance has pageFlip() that returns an API
+      inst.pageFlip().flip(firstContentsPageIndex - 1);
+    } else if (inst && typeof inst.flip === "function") {
+      // fallback if ref resolves to PageFlip API
+      inst.flip(firstContentsPageIndex);
+    }
+  };
+
   return (
     <HTMLFlipBook
+      ref={bookRef}
       width={pageWidth}
       height={pageHeight}
       maxShadowOpacity={0.5}
@@ -212,7 +229,7 @@ function Book() {
         </div>
       ))}
 
-      {recipeData.flatMap((recipe, index) => [
+  {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
           <div
             className="recipe-image-full"
@@ -227,6 +244,7 @@ function Book() {
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
             pageNumber={index * 2 + 4}
+    onGoToContents={goToFirstContents}
           />
         </div>,
       ])}

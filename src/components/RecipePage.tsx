@@ -8,6 +8,7 @@ type RecipePageProps = {
   ingredients: string[];
   instructions: string;
   pageNumber: number;
+  onGoToContents?: () => void;
 };
 
 function RecipePage({
@@ -17,11 +18,25 @@ function RecipePage({
   ingredients,
   instructions,
   pageNumber,
+  onGoToContents,
 }: RecipePageProps) {
   return (
     <div className="page-content">
       <div className="recipe-container">
-        <h2 className="recipe-title">{title}</h2>
+        <div className="recipe-title-container">
+          <h2 className="recipe-title">{title}</h2>
+          {onGoToContents && (
+            <button
+              type="button"
+              className="icon-button contents-link"
+              onClick={onGoToContents}
+              aria-label="Go to contents"
+              title="Go to contents"
+            >
+              <span className="material-symbols-outlined">menu_book</span>
+            </button>
+          )}
+        </div>
         <div className="recipe-body">
           <div className="recipe-times">
             <div className="time-block">
