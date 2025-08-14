@@ -272,11 +272,25 @@ function Book() {
       </div>
 
       {/* Contents pages (auto-split) */}
-      {pagedContents.map((items, idx) => (
-        <div className="page" key={`contents-${idx}`}>
-          <ContentsPage items={items} />
-        </div>
-      ))}
+      {pagedContents.map((items, idx) => {
+        const startIndex = idx * estPerPage;
+        return (
+          <div className="page" key={`contents-${idx}`}>
+            <ContentsPage
+              items={items}
+              startIndex={startIndex}
+              onSelect={(globalIndex) => {
+                // globalIndex corresponds to recipe index
+                // Compute the recipe page container index in the flip book children
+                // Pages: 0 Cover,1 Blank,2 Foreword, contents..., then for each recipe: image then recipe page
+                const recipesStartIndex = 3 + pagedContents.length; // after all contents pages
+                const pageIndex = recipesStartIndex + globalIndex * 2 + 1; // jump to the text page (after image)
+                flipTo(pageIndex + 2); // use 1-based indexing
+              }}
+            />
+          </div>
+        );
+      })}
 
   {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>

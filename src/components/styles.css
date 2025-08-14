@@ -264,6 +264,13 @@
   align-items: baseline;
   margin-bottom: 12px;
   font-size: clamp(0.9rem, 2.2vw, 1rem);
+  cursor: default;
+}
+.contents-item[role="button"] {
+  cursor: pointer;
+}
+.contents-item[role="button"]:hover .title {
+  text-decoration: underline;
 }
 
 .contents-item .title {
