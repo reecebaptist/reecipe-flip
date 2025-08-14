@@ -178,7 +178,7 @@ function Book() {
         <ForewordPage />
       </div>
 
-      {recipeData.flatMap((recipe) => [
+      {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
           <div
             className="recipe-image-full"
@@ -192,6 +192,7 @@ function Book() {
             cookTime={recipe.cookTime}
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
+            pageNumber={index * 2 + 2}
           />
         </div>,
       ])}

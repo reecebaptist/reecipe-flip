@@ -7,6 +7,7 @@ type RecipePageProps = {
   cookTime: string;
   ingredients: string[];
   instructions: string;
+  pageNumber: number;
 };
 
 function RecipePage({
@@ -15,6 +16,7 @@ function RecipePage({
   cookTime,
   ingredients,
   instructions,
+  pageNumber,
 }: RecipePageProps) {
   const [checkedItems, setCheckedItems] = React.useState<
     Record<string, boolean>
@@ -55,20 +57,15 @@ function RecipePage({
           </div>
           <div className="recipe-ingredients">
             {ingredients.map((ingredient) => (
-              <div key={ingredient} className="ingredient-item">
+              <label className="ingredient-item" key={ingredient}>
+                {ingredient}
                 <input
                   type="checkbox"
-                  id={ingredient}
                   checked={checkedItems[ingredient] || false}
                   onChange={() => handleCheckboxChange(ingredient)}
                 />
-                <label
-                  htmlFor={ingredient}
-                  className={checkedItems[ingredient] ? "checked" : ""}
-                >
-                  {ingredient}
-                </label>
-              </div>
+                <span className="checkmark"></span>
+              </label>
             ))}
           </div>
           <div className="detail-header">
@@ -77,6 +74,7 @@ function RecipePage({
           </div>
           <p className="recipe-instructions">{instructions}</p>
         </div>
+        <div className="page-number">{pageNumber}</div>
       </div>
     </div>
   );
