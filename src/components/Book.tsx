@@ -139,6 +139,43 @@ function Book() {
       instructions:
         "Toss lettuce with dressing. Top with croutons and cheese. Add grilled chicken if desired.",
     },
+    {
+      id: "5",
+      title: "Beef Stroganoff",
+      image: recipe3,
+      prepTime: "15 mins",
+      cookTime: "25 mins",
+      ingredients: [
+        "Beef Strips",
+        "Mushrooms",
+        "Onion",
+        "Garlic",
+        "Sour Cream",
+        "Beef Stock",
+        "Paprika",
+        "Butter",
+        "Parsley",
+      ],
+      instructions:
+        "Sear beef, set aside. Sauté onions and mushrooms in butter, add garlic and paprika. Deglaze with stock, simmer, return beef and finish with sour cream. Serve over buttered noodles.",
+    },
+    {
+      id: "6",
+      title: "Margherita Pizza",
+      image: recipe2,
+      prepTime: "20 mins",
+      cookTime: "12 mins",
+      ingredients: [
+        "Pizza Dough",
+        "Tomato Sauce",
+        "Fresh Mozzarella",
+        "Basil Leaves",
+        "Olive Oil",
+        "Salt",
+      ],
+      instructions:
+        "Stretch dough, spread sauce, add mozzarella. Bake hot until crust is golden, then top with basil and a drizzle of olive oil.",
+    },
   ];
 
   // Build Contents items from recipeData (image page is before each recipe page)
