@@ -73,6 +73,8 @@ function Book() {
       id: "1",
       title: "Spaghetti Carbonara",
       image: recipe1,
+      prepTime: "10 mins",
+      cookTime: "15 mins",
       ingredients: [
         "Spaghetti",
         "Eggs",
@@ -87,6 +89,8 @@ function Book() {
       id: "2",
       title: "Chicken Curry",
       image: recipe2,
+      prepTime: "15 mins",
+      cookTime: "20 mins",
       ingredients: [
         "Chicken Breast",
         "Onion",
@@ -102,6 +106,8 @@ function Book() {
       id: "3",
       title: "Chocolate Cake",
       image: recipe3,
+      prepTime: "20 mins",
+      cookTime: "35 mins",
       ingredients: [
         "Flour",
         "Sugar",
@@ -118,6 +124,8 @@ function Book() {
       id: "4",
       title: "Caesar Salad",
       image: recipe4,
+      prepTime: "15 mins",
+      cookTime: "0 mins",
       ingredients: [
         "Romaine Lettuce",
         "Croutons",
@@ -145,7 +153,7 @@ function Book() {
       maxWidth={pageWidth}
       minHeight={pageHeight}
       maxHeight={pageHeight}
-      flippingTime={750}
+      flippingTime={500}
       usePortrait={isPortrait}
       startZIndex={0}
       autoSize={false}
@@ -170,16 +178,23 @@ function Book() {
         <ForewordPage />
       </div>
 
-      {recipeData.map((recipe) => (
+      {recipeData.flatMap((recipe) => [
+        <div className="page" key={`${recipe.id}-img`}>
+          <div
+            className="recipe-image-full"
+            style={{ backgroundImage: `url(${recipe.image})` }}
+          />
+        </div>,
         <div className="page" key={recipe.id}>
           <RecipePage
             title={recipe.title}
-            image={recipe.image}
+            prepTime={recipe.prepTime}
+            cookTime={recipe.cookTime}
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
           />
-        </div>
-      ))}
+        </div>,
+      ])}
     </HTMLFlipBook>
   );
 }

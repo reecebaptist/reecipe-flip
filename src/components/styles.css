@@ -70,38 +70,109 @@
 }
 
 /* Styles used by RecipePage */
+.recipe-image-full {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
 .recipe-container {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  height: 100%;
+}
+
+.recipe-title-container {
+  display: flex;
   align-items: center;
-  text-align: center;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 
 .recipe-title {
-  font-size: 1.5em;
-  margin-bottom: 10px;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.recipe-times {
+  display: flex;
+  gap: 100px;
+  margin-bottom: 20px;
+  width: 100%;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-block .time-value {
+  padding-left: 32px; /* Align with text, accounting for icon + gap */
+}
+
+.time-block strong {
+  font-weight: bold;
 }
 
 .recipe-image {
-  width: 100%;
-  max-width: 200px;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  display: none;
+}
+
+.recipe-details {
+  flex-grow: 1;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .recipe-details h3 {
   font-size: 1.2em;
   margin-top: 15px;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 
 .recipe-ingredients {
-  list-style-position: inside;
-  padding-left: 0;
-  text-align: left;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ingredient-item input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.ingredient-item label {
+  cursor: pointer;
+}
+
+.ingredient-item label.checked {
+  text-decoration: line-through;
+  color: #888;
 }
 
 .recipe-instructions {
