@@ -18,14 +18,6 @@ function RecipePage({
   instructions,
   pageNumber,
 }: RecipePageProps) {
-  const [checkedItems, setCheckedItems] = React.useState<
-    Record<string, boolean>
-  >({});
-
-  const handleCheckboxChange = (ingredient: string) => {
-    setCheckedItems((prev) => ({ ...prev, [ingredient]: !prev[ingredient] }));
-  };
-
   return (
     <div className="page-content">
       <div className="recipe-container">
@@ -55,19 +47,11 @@ function RecipePage({
             <span className="material-symbols-outlined">restaurant_menu</span>
             <h3>Ingredients</h3>
           </div>
-          <div className="recipe-ingredients">
+          <ul className="recipe-ingredients">
             {ingredients.map((ingredient) => (
-              <label className="ingredient-item" key={ingredient}>
-                {ingredient}
-                <input
-                  type="checkbox"
-                  checked={checkedItems[ingredient] || false}
-                  onChange={() => handleCheckboxChange(ingredient)}
-                />
-                <span className="checkmark"></span>
-              </label>
+              <li key={ingredient}>{ingredient}</li>
             ))}
-          </div>
+          </ul>
           <div className="detail-header">
             <span className="material-symbols-outlined">soup_kitchen</span>
             <h3>Instructions</h3>
