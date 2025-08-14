@@ -3,6 +3,7 @@ import HTMLFlipBook from "react-pageflip";
 import CoverPage from "./CoverPage";
 import RecipePage from "./RecipePage";
 import ForewordPage from "./ForewordPage";
+import ContentsPage from "./ContentsPage";
 import recipe1 from "../assets/images/cover-bg.avif";
 import recipe2 from "../assets/images/cover-bg-2.avif";
 import recipe3 from "../assets/images/cover-bg-3.avif";
@@ -178,6 +179,14 @@ function Book() {
         <ForewordPage />
       </div>
 
+      {/* Contents pages */}
+      <div className="page">
+        <ContentsPage />
+      </div>
+      <div className="page">
+        <div className="page-content" />
+      </div>
+
       {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
           <div
@@ -192,7 +201,7 @@ function Book() {
             cookTime={recipe.cookTime}
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
-            pageNumber={index * 2 + 2}
+            pageNumber={index * 2 + 4}
           />
         </div>,
       ])}

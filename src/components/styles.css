@@ -18,6 +18,17 @@
   text-align: center;
 }
 
+/* Left-align variant for Contents page */
+.contents-page {
+  align-items: stretch; /* make children span full width */
+  justify-content: flex-start; /* start from top */
+  text-align: left;
+}
+
+.contents-page .recipe-container {
+  align-items: flex-start;
+}
+
 .cover {
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   color: white;
@@ -201,4 +212,36 @@
 }
 .foreword p + p {
   margin-top: 12px;
+}
+
+/* Contents page */
+.contents-list {
+  width: 100%;
+  padding: 0; /* align with title (same as RecipePage) */
+}
+
+.contents-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+}
+
+.contents-item .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.contents-item .dots {
+  flex-grow: 1;
+  border-bottom: 1px dotted #ccc;
+  position: relative;
+  bottom: 4px;
+}
+
+.contents-item .page {
+  margin-left: 8px;
 }
