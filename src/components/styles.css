@@ -163,3 +163,22 @@
   margin-top: 8px;
   line-height: 1.4;
 }
+
+/* Foreword page */
+.foreword {
+  max-width: 90%;
+  width: 640px;
+  margin: 0 auto;
+  text-align: left;
+  color: #1b2733;
+  line-height: 1.6;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+}
+.foreword-title {
+  font-weight: 800;
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+  margin-bottom: 10px;
+}
+.foreword p + p {
+  margin-top: 12px;
+}

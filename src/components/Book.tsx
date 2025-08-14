@@ -2,6 +2,7 @@ import React from "react";
 import HTMLFlipBook from "react-pageflip";
 import CoverPage from "./CoverPage";
 import RecipePage from "./RecipePage";
+import ForewordPage from "./ForewordPage";
 
 function Book() {
   // Track viewport size for responsive sizing
@@ -143,6 +144,16 @@ function Book() {
     >
       <div className="page" style={{ background: "transparent" }}>
         <CoverPage />
+      </div>
+
+      {/* Blank page after cover */}
+      <div className="page" style={{ background: "#ffffff" }}>
+        <div className="page-content" />
+      </div>
+
+      {/* Foreword page */}
+      <div className="page">
+        <ForewordPage />
       </div>
 
       {pokemonData.map((pokemon) => (
