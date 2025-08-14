@@ -97,6 +97,13 @@
   font-size: 1.8em;
   font-weight: bold;
   margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.recipe-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 10px; /* For scrollbar */
 }
 
 .recipe-times {
@@ -170,6 +177,7 @@
   right: 20px;
   font-size: 0.9em;
   color: #888;
+  flex-shrink: 0;
 }
 
 .recipe-instructions {
