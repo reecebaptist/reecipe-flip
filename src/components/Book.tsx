@@ -1,5 +1,7 @@
 import React from "react";
 import HTMLFlipBook from "react-pageflip";
+import CoverPage from "./CoverPage";
+import RecipePage from "./RecipePage";
 
 function Book() {
   // Track viewport size for responsive sizing
@@ -140,40 +142,17 @@ function Book() {
       disableFlipByClick={false}
     >
       <div className="page" style={{ background: "transparent" }}>
-        <div className="page-content cover">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg"
-            alt="Pokémon Logo"
-            className="pokemon-logo"
-          />
-        </div>
+        <CoverPage />
       </div>
 
       {pokemonData.map((pokemon) => (
         <div className="page" key={pokemon.id}>
-          <div className="page-content">
-            <div className="pokemon-container">
-              <img
-                src={`https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/${pokemon.id}.png`}
-                alt={pokemon.name}
-              />
-              <div className="pokemon-info">
-                <h2 className="pokemon-name">{pokemon.name}</h2>
-                <p className="pokemon-number">#{pokemon.id}</p>
-                <div>
-                  {pokemon.types.map((type) => (
-                    <span
-                      key={type}
-                      className={`pokemon-type type-${type.toLowerCase()}`}
-                    >
-                      {type}
-                    </span>
-                  ))}
-                </div>
-                <p className="pokemon-description">{pokemon.description}</p>
-              </div>
-            </div>
-          </div>
+          <RecipePage
+            id={pokemon.id}
+            name={pokemon.name}
+            types={pokemon.types}
+            description={pokemon.description}
+          />
         </div>
       ))}
     </HTMLFlipBook>
