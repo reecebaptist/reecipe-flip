@@ -121,8 +121,8 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       showPageCorners={isPortrait}
       disableFlipByClick={false}
     >
-  {/* Left page: photo upload/preview with inset spacing */}
-  <div className="page editor-page">
+      {/* Left page: photo upload/preview with inset spacing */}
+      <div className="page editor-page">
         <div className="editor-image-wrapper">
           <div
             onClick={openFilePicker}
@@ -201,21 +201,18 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       {/* Right page: details form */}
       <div className="page editor-page">
         <div className="page-content no-padding">
-          <div
-            className="recipe-container editor-recipe-container"
-          >
+          <div className="recipe-container editor-recipe-container">
             <div className="recipe-title-container">
-                <h2 className="recipe-title">{mode === "edit" ? "Edit recipe" : "Add a new recipe"}</h2>
-              
+              <h2 className="recipe-title">
+                {mode === "edit" ? "Edit recipe" : "Add a new recipe"}
+              </h2>
             </div>
 
             {/* Scrollable form content */}
             <div className="editor-form-scroll">
               {/* Title full-width */}
               <label style={{ display: "block" }}>
-                <span className="editor-field-label">
-                  Title
-                </span>
+                <span className="editor-field-label">Title</span>
                 <input
                   type="text"
                   value={draftTitle}
@@ -228,9 +225,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
               {/* Prep and Cook on one line, half each */}
               <div className="editor-grid-2">
                 <label style={{ display: "block" }}>
-                  <span className="editor-field-label">
-                    Prep Time
-                  </span>
+                  <span className="editor-field-label">Prep Time</span>
                   <input
                     type="text"
                     value={draftPrep}
@@ -240,9 +235,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                   />
                 </label>
                 <label style={{ display: "block" }}>
-                  <span className="editor-field-label">
-                    Cook Time
-                  </span>
+                  <span className="editor-field-label">Cook Time</span>
                   <input
                     type="text"
                     value={draftCook}
@@ -268,9 +261,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
 
               {/* Steps (Instructions) full-width textarea */}
               <label style={{ display: "block" }}>
-                <span className="editor-field-label">
-                  Steps
-                </span>
+                <span className="editor-field-label">Steps</span>
                 <textarea
                   value={draftInstructions}
                   onChange={(e) => setDraftInstructions(e.target.value)}

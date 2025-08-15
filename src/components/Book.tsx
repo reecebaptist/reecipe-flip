@@ -284,7 +284,11 @@ function Book() {
           onFlip={(e: any) => {
             const newPage = typeof e?.data === "number" ? e.data : undefined;
             if (typeof newPage !== "number") return;
-            if (isLocked && !revertingRef.current && !allowProgrammaticFlipRef.current) {
+            if (
+              isLocked &&
+              !revertingRef.current &&
+              !allowProgrammaticFlipRef.current
+            ) {
               const api = bookRef.current?.pageFlip?.();
               if (api && typeof api.flip === "function") {
                 revertingRef.current = true;

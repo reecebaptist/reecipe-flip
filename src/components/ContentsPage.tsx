@@ -160,18 +160,20 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                   );
                   const targetIndex = startIndex + Math.max(originalIndex, 0);
                   return (
-                  <div
-                    className="contents-item"
-                    key={`${item.title}-${item.page}`}
-                    onClick={onSelect ? () => onSelect(targetIndex) : undefined}
-                    role={onSelect ? "button" : undefined}
-                    tabIndex={onSelect ? 0 : undefined}
-                  >
-                    <span className="index">{startIndex + idx + 1}.</span>
-                    <span className="title">{item.title}</span>
-                    <span className="dots"></span>
-                    <span className="page">{item.page}</span>
-                  </div>
+                    <div
+                      className="contents-item"
+                      key={`${item.title}-${item.page}`}
+                      onClick={
+                        onSelect ? () => onSelect(targetIndex) : undefined
+                      }
+                      role={onSelect ? "button" : undefined}
+                      tabIndex={onSelect ? 0 : undefined}
+                    >
+                      <span className="index">{startIndex + idx + 1}.</span>
+                      <span className="title">{item.title}</span>
+                      <span className="dots"></span>
+                      <span className="page">{item.page}</span>
+                    </div>
                   );
                 })}
               </div>

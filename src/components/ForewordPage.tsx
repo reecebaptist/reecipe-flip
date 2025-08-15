@@ -41,16 +41,16 @@ function ForewordPage({ romanIndex }: ForewordPageProps) {
         </div>
         <div className="foreword">
           <p>
-            Cooking is one of the simplest ways to turn time into care. It
-            slows us down long enough to notice ingredients, to listen for the
-            quiet cues of heat, and to share something nourishing with the
-            people around us.
+            Cooking is one of the simplest ways to turn time into care. It slows
+            us down long enough to notice ingredients, to listen for the quiet
+            cues of heat, and to share something nourishing with the people
+            around us.
           </p>
           <p>
-            A good cookbook is more than a list of recipes—it’s a map. It
-            points to reliable techniques, offers substitutions when life gets
-            messy, and teaches a rhythm you can return to on weeknights or
-            weekends alike.
+            A good cookbook is more than a list of recipes—it’s a map. It points
+            to reliable techniques, offers substitutions when life gets messy,
+            and teaches a rhythm you can return to on weeknights or weekends
+            alike.
           </p>
           <p>
             In these pages, you’ll find approachable methods framed by clear
