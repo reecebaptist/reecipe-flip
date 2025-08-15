@@ -97,14 +97,8 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       disableFlipByClick={false}
     >
   {/* Left page: photo upload/preview with inset spacing */}
-  <div className="page" style={{ position: "relative" }}>
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            boxSizing: "border-box",
-          }}
-        >
+  <div className="page editor-page">
+        <div className="editor-image-wrapper">
           <div
             onClick={openFilePicker}
             onKeyDown={(e) => {
@@ -115,23 +109,8 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             }}
             role="button"
             tabIndex={0}
-            style={{
-              position: "relative",
-              width: "100%",
-              height: "100%",
-              border: preview ? "0 none" : "2px dashed #ccc",
-              overflow: "hidden",
-              background: preview
-                ? `center/cover no-repeat url(${preview})`
-                : "#fafafa",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#666",
-              textAlign: "center",
-              cursor: "pointer",
-              outline: "none",
-            }}
+            className={`editor-image-area ${preview ? "" : "is-empty"}`}
+            style={preview ? { backgroundImage: `url(${preview})` } : undefined}
             aria-label={preview ? "Recipe image" : "Upload recipe image"}
             title={preview ? "Click to change image" : "Click to upload image"}
           >
@@ -144,18 +123,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
               style={{ display: "none" }}
             />
             {preview && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  display: "flex",
-                  gap: 8,
-                }}
-              >
+              <div className="editor-image-actions">
                 <button
                   type="button"
-                  className="icon-button contents-link"
+                  className="icon-button contents-link white-bg"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -163,13 +134,12 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                   }}
                   title="Change photo"
                   aria-label="Change photo"
-                  style={{ backgroundColor: "#fff" }}
                 >
                   <span className="material-symbols-outlined">edit</span>
                 </button>
                 <button
                   type="button"
-                  className="icon-button contents-link"
+                  className="icon-button contents-link white-bg"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -177,7 +147,6 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                   }}
                   title="Delete photo"
                   aria-label="Delete photo"
-                  style={{ backgroundColor: "#fff" }}
                 >
                   <span className="material-symbols-outlined">delete</span>
                 </button>
@@ -188,7 +157,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
         {isPortrait && (
           <button
             type="button"
-            className="icon-button contents-link"
+            className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -198,14 +167,6 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             }}
             aria-label="Next page"
             title="Next page"
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: 8,
-              transform: "translateY(-50%)",
-              backgroundColor: "#fff",
-              zIndex: 5,
-            }}
           >
             <span className="material-symbols-outlined">chevron_right</span>
           </button>
@@ -213,21 +174,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       </div>
 
       {/* Right page: details form */}
-      <div className="page" style={{ position: "relative" }}>
-        <div className="page-content" style={{ padding: 0 }}>
+      <div className="page editor-page">
+        <div className="page-content no-padding">
           <div
-            className="recipe-container"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-              width: "100%",
-              maxWidth: "unset",
-              margin: 0,
-              padding: 20,
-              boxSizing: "border-box",
-              alignItems: "stretch",
-            }}
+            className="recipe-container editor-recipe-container"
           >
             <div className="recipe-title-container">
               <h2 className="recipe-title">Add a new recipe</h2>
@@ -248,88 +198,44 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             </div>
 
             {/* Scrollable form content */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                flex: 1,
-                minHeight: 0,
-                overflow: "auto",
-              }}
-            >
+            <div className="editor-form-scroll">
               {/* Title full-width */}
               <label style={{ display: "block" }}>
-                <span
-                  style={{ display: "block", fontWeight: 600, marginBottom: 4 }}
-                >
+                <span className="editor-field-label">
                   Title
                 </span>
                 <input
                   type="text"
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: 8,
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                  }}
+                  className="editor-input"
                   placeholder="Recipe title"
                 />
               </label>
 
               {/* Prep and Cook on one line, half each */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 12,
-                }}
-              >
+              <div className="editor-grid-2">
                 <label style={{ display: "block" }}>
-                  <span
-                    style={{
-                      display: "block",
-                      fontWeight: 600,
-                      marginBottom: 4,
-                    }}
-                  >
+                  <span className="editor-field-label">
                     Prep Time
                   </span>
                   <input
                     type="text"
                     value={draftPrep}
                     onChange={(e) => setDraftPrep(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: 8,
-                      borderRadius: 6,
-                      border: "1px solid #ccc",
-                    }}
+                    className="editor-input"
                     placeholder="e.g. 15 mins"
                   />
                 </label>
                 <label style={{ display: "block" }}>
-                  <span
-                    style={{
-                      display: "block",
-                      fontWeight: 600,
-                      marginBottom: 4,
-                    }}
-                  >
+                  <span className="editor-field-label">
                     Cook Time
                   </span>
                   <input
                     type="text"
                     value={draftCook}
                     onChange={(e) => setDraftCook(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: 8,
-                      borderRadius: 6,
-                      border: "1px solid #ccc",
-                    }}
+                    className="editor-input"
                     placeholder="e.g. 30 mins"
                   />
                 </label>
@@ -337,70 +243,45 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
 
               {/* Ingredients full-width */}
               <label style={{ display: "block" }}>
-                <span
-                  style={{ display: "block", fontWeight: 600, marginBottom: 4 }}
-                >
+                <span className="editor-field-label">
                   Ingredients (one per line)
                 </span>
                 <textarea
                   value={draftIngredients}
                   onChange={(e) => setDraftIngredients(e.target.value)}
-                  style={{
-                    width: "100%",
-                    height: 140,
-                    resize: "none",
-                    overflow: "auto",
-                    padding: 8,
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                  }}
+                  className="editor-textarea ingredients"
                   placeholder={"Flour\nSugar\nEggs"}
                 />
               </label>
 
               {/* Steps (Instructions) full-width textarea */}
               <label style={{ display: "block" }}>
-                <span
-                  style={{ display: "block", fontWeight: 600, marginBottom: 4 }}
-                >
+                <span className="editor-field-label">
                   Steps
                 </span>
                 <textarea
                   value={draftInstructions}
                   onChange={(e) => setDraftInstructions(e.target.value)}
-                  style={{
-                    width: "100%",
-                    height: 220,
-                    resize: "none",
-                    overflow: "auto",
-                    padding: 8,
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                  }}
+                  className="editor-textarea steps"
                   placeholder="Step-by-step instructions"
                 />
               </label>
             </div>
 
             {/* Buttons pinned to bottom */}
-            <div
-              style={{
-                marginTop: "auto",
-                display: "flex",
-                gap: 8,
-                justifyContent: "flex-end",
-              }}
-            >
+            <div className="editor-actions">
               <button
                 type="button"
-                className="contents-add-button"
+                className="icon-button contents-link is-danger"
                 onClick={onCancel}
+                aria-label="Cancel"
+                title="Cancel"
               >
-                Cancel
+                <span className="material-symbols-outlined">close</span>
               </button>
               <button
                 type="button"
-                className="contents-add-button"
+                className="icon-button contents-link is-success"
                 onClick={() => {
                   onSave?.({
                     title: draftTitle.trim(),
@@ -415,8 +296,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                   });
                   onCancel();
                 }}
+                aria-label="Save"
+                title="Save"
               >
-                Save
+                <span className="material-symbols-outlined">save</span>
               </button>
             </div>
           </div>
@@ -424,7 +307,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
         {isPortrait && (
           <button
             type="button"
-            className="icon-button contents-link"
+            className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -434,14 +317,6 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             }}
             aria-label="Next page"
             title="Next page"
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: 8,
-              transform: "translateY(-50%)",
-              backgroundColor: "#fff",
-              zIndex: 5,
-            }}
           >
             <span className="material-symbols-outlined">chevron_right</span>
           </button>

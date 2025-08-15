@@ -258,6 +258,127 @@
   text-align: justify;
 }
 
+/* AddRecipeEditor (editor) */
+.editor-page {
+  position: relative;
+}
+
+.editor-image-wrapper {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+}
+
+.editor-image-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.editor-image-area.is-empty {
+  border: 2px dashed #ccc;
+  background-color: #fafafa;
+}
+.editor-image-area:not(.is-empty) {
+  border: 0 none;
+}
+
+.editor-image-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button.white-bg {
+  background: #fff;
+}
+.icon-button.white-bg:hover,
+.icon-button.white-bg:active {
+  background: #fff;
+}
+
+.editor-edge-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  z-index: 5;
+}
+.editor-edge-btn--right { right: 8px; }
+.editor-edge-btn--left { left: 8px; }
+
+.page-content.no-padding {
+  padding: 0;
+}
+
+.editor-recipe-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: unset;
+  margin: 0;
+  padding: 28px; /* editor-specific spacing */
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.editor-form-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.editor-field-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.editor-input,
+.editor-textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.editor-textarea {
+  resize: none;
+  overflow: auto;
+}
+.editor-textarea.ingredients { height: 140px; }
+.editor-textarea.steps { height: 220px; }
+
+.editor-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.editor-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.icon-button.is-danger { color: #ef4444; background: #fff; }
+.icon-button.is-success { color: #10b981; background: #fff; }
+
 /* Foreword page */
 .foreword {
   max-width: 90%;
