@@ -1,6 +1,38 @@
 import "./styles.css";
 
-function ForewordPage() {
+type ForewordPageProps = {
+  romanIndex?: number; // 1-based index for roman page numbering
+};
+
+function toRoman(num: number): string {
+  if (!num || num < 1) return "";
+  const map: [number, string][] = [
+    [1000, "m"],
+    [900, "cm"],
+    [500, "d"],
+    [400, "cd"],
+    [100, "c"],
+    [90, "xc"],
+    [50, "l"],
+    [40, "xl"],
+    [10, "x"],
+    [9, "ix"],
+    [5, "v"],
+    [4, "iv"],
+    [1, "i"],
+  ];
+  let res = "";
+  for (const [val, sym] of map) {
+    while (num >= val) {
+      res += sym;
+      num -= val;
+    }
+  }
+  return res;
+}
+
+function ForewordPage({ romanIndex }: ForewordPageProps) {
+  const roman = romanIndex ? toRoman(romanIndex) : "";
   return (
     <div className="page-content contents-page">
       <div className="recipe-container">
@@ -39,6 +71,7 @@ function ForewordPage() {
             full.
           </p>
         </div>
+        {roman && <div className="page-number">{roman}</div>}
       </div>
     </div>
   );

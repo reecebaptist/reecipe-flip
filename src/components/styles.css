@@ -431,14 +431,14 @@
 /* Contents page */
 .contents-list {
   width: 100%;
-  /* Constrain list so it never flows under the centered page-number footer */
-  max-height: calc(100% - 128px); /* TITLE_BLOCK(64) + TOP/BOTTOM padding(40) + FOOTER(24) */
-  overflow: hidden;
+  /* List flows naturally; the parent .contents-scroll handles scrolling */
+  max-height: none;
+  overflow: visible;
   padding: 0; /* align with title (same as RecipePage) */
 }
 .contents-list.is-last {
-  /* Leave extra room for the actions (button) block */
-  max-height: calc(100% - 168px); /* extra 40px reserved */
+  /* No special height when list is last; scrolling is handled by parent */
+  max-height: none;
 }
 
 .contents-actions {
@@ -534,6 +534,14 @@
 }
 .contents-item[role="button"]:hover .title {
   text-decoration: underline;
+}
+
+.contents-item .index {
+  flex: 0 0 auto;
+  min-width: 2ch; /* room for 1-2 digits */
+  margin-right: 8px;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
 }
 
 .contents-item .title {

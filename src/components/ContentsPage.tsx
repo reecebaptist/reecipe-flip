@@ -147,7 +147,12 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                 </div>
               )}
             </div>
-            <div className="contents-scroll">
+            <div
+              className="contents-scroll"
+              onPointerDownCapture={stopFlipCapture}
+              onTouchStartCapture={stopFlipCapture}
+              onMouseDownCapture={stopFlipCapture}
+            >
               <div className={listClass}>
                 {displayedItems.map((item, idx) => (
                   <div
@@ -159,6 +164,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                     role={onSelect ? "button" : undefined}
                     tabIndex={onSelect ? 0 : undefined}
                   >
+                    <span className="index">{startIndex + idx + 1}.</span>
                     <span className="title">{item.title}</span>
                     <span className="dots"></span>
                     <span className="page">{item.page}</span>

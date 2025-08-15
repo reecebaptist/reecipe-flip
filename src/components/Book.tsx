@@ -458,14 +458,7 @@ function Book() {
       image: recipe4,
       prepTime: "10 mins",
       cookTime: "25 mins",
-      ingredients: [
-        "Tomatoes",
-        "Onion",
-        "Garlic",
-        "Basil",
-        "Stock",
-        "Cream",
-      ],
+      ingredients: ["Tomatoes", "Onion", "Garlic", "Basil", "Stock", "Cream"],
       instructions:
         "Simmer tomatoes with aromatics and stock, blend smooth, add cream and basil.",
     },
@@ -628,14 +621,7 @@ function Book() {
       image: recipe2,
       prepTime: "10 mins",
       cookTime: "25 mins",
-      ingredients: [
-        "Pumpkin",
-        "Onion",
-        "Garlic",
-        "Stock",
-        "Cream",
-        "Nutmeg",
-      ],
+      ingredients: ["Pumpkin", "Onion", "Garlic", "Stock", "Cream", "Nutmeg"],
       instructions:
         "Simmer pumpkin with aromatics and stock, blend, finish with cream and nutmeg.",
     },
@@ -731,17 +717,17 @@ function Book() {
         <CoverPage />
       </div>
 
-  {/* Empty page before Author */}
-  <div className="page" style={{ background: "#ffffff" }} />
+      {/* Empty page before Author */}
+      <div className="page" style={{ background: "#ffffff" }} />
 
-  {/* Author page after empty */}
+      {/* Author page after empty */}
       <div className="page" style={{ background: "#ffffff" }}>
         <AuthorPage />
       </div>
 
       {/* Foreword page */}
       <div className="page">
-        <ForewordPage />
+        <ForewordPage romanIndex={1} />
       </div>
 
       {/* Contents page (single, scrollable) */}
@@ -749,7 +735,7 @@ function Book() {
         <ContentsPage
           items={contentsItems}
           startIndex={0}
-          romanIndex={1}
+          romanIndex={2}
           isLastPage={true}
           onAddRecipe={() => {
             setAddingRecipe(true);
