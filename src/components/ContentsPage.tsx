@@ -50,17 +50,90 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   const hasItems = items && items.length > 0;
   const roman = romanIndex ? toRoman(romanIndex) : "";
   const listClass = `contents-list${isLastPage ? " is-last" : ""}`;
+  const [showSearch, setShowSearch] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+  const searchInputRef = React.useRef<HTMLInputElement | null>(null);
+  const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  React.useEffect(() => {
+    if (showSearch) {
+      // Defer focus slightly to ensure element exists
+      const id = requestAnimationFrame(() => searchInputRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [showSearch]);
+
+  const displayedItems = React.useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((it) => it.title.toLowerCase().includes(q));
+  }, [items, query]);
   return (
     <div className="page-content contents-page">
       <div className="recipe-container">
         {hasItems && (
           <>
-            <h2 className="recipe-title">Contents</h2>
+            <div className="recipe-title-container">
+              <h2 className="recipe-title">Contents</h2>
+            </div>
+            <div className="contents-search-row">
+              <button
+                type="button"
+                className="icon-button contents-link"
+                onClick={() => {
+                  setShowSearch((s) => !s);
+                }}
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                aria-label={showSearch ? "Close search" : "Search"}
+                title={showSearch ? "Close search" : "Search"}
+              >
+                <span className="material-symbols-outlined">
+                  {showSearch ? "close" : "search"}
+                </span>
+              </button>
+              {showSearch && (
+                <div className="contents-search-input-wrapper">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onPointerDownCapture={stopFlipCapture}
+                    onTouchStartCapture={stopFlipCapture}
+                    onMouseDownCapture={stopFlipCapture}
+                    className="contents-search-input with-clear"
+                    placeholder="Search recipes"
+                    aria-label="Search recipes"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      className="contents-search-clear"
+                      onClick={() => {
+                        setQuery("");
+                        searchInputRef.current?.focus();
+                      }}
+                      onPointerDownCapture={stopFlipCapture}
+                      onTouchStartCapture={stopFlipCapture}
+                      onMouseDownCapture={stopFlipCapture}
+                      aria-label="Clear search"
+                      title="Clear search"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
             <div className={listClass}>
-              {items.map((item, idx) => (
+              {displayedItems.map((item, idx) => (
                 <div
                   className="contents-item"
-                  key={item.title}
+                  key={`${item.title}-${item.page}`}
                   onClick={
                     onSelect ? () => onSelect(startIndex + idx) : undefined
                   }
