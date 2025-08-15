@@ -154,6 +154,9 @@
   width: 100%;
   margin-top: -6px; /* tighten space under title */
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* space between action buttons */
 }
 .go-contents-button {
   display: inline-flex;

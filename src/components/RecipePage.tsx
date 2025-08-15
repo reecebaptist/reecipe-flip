@@ -9,6 +9,8 @@ type RecipePageProps = {
   instructions: string;
   pageNumber: number;
   onGoToContents?: () => void;
+  isLocked?: boolean;
+  onToggleLock?: () => void;
 };
 
 function RecipePage({
@@ -19,6 +21,8 @@ function RecipePage({
   instructions,
   pageNumber,
   onGoToContents,
+  isLocked,
+  onToggleLock,
 }: RecipePageProps) {
   const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
@@ -27,29 +31,52 @@ function RecipePage({
     <div className="page-content">
       <div className="recipe-container">
         <div className="recipe-title-container">
-          <h2 className="recipe-title">{title}</h2>          
+          <h2 className="recipe-title">{title}</h2>
         </div>
-        {onGoToContents && (
+        {(onGoToContents || onToggleLock) && (
           <div className="recipe-actions-row">
-            <button
-              type="button"
-              className="go-contents-button"
-              onPointerDownCapture={stopFlipCapture}
-              onTouchStartCapture={stopFlipCapture}
-              onMouseDownCapture={stopFlipCapture}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onGoToContents();
-              }}
-              aria-label="Go to contents"
-              title="Go to contents"
-           >
-              <span className="material-symbols-outlined" aria-hidden>
-                menu_book
-              </span>
-              <span>Go to contents</span>
-            </button>
+            {onGoToContents && (
+              <button
+                type="button"
+                className="go-contents-button"
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onGoToContents();
+                }}
+                aria-label="Go to contents"
+                title="Go to contents"
+              >
+                <span className="material-symbols-outlined" aria-hidden>
+                  menu_book
+                </span>
+                <span>Go to contents</span>
+              </button>
+            )}
+            {onToggleLock && (
+              <button
+                type="button"
+                className="go-contents-button"
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleLock();
+                }}
+                aria-label={isLocked ? "Unlock pages" : "Lock pages"}
+                title={isLocked ? "Unlock pages" : "Lock pages"}
+              >
+                <span className="material-symbols-outlined" aria-hidden>
+                  {isLocked ? "lock" : "lock_open"}
+                </span>
+                <span>{isLocked ? "Unlock" : "Lock"}</span>
+              </button>
+            )}
           </div>
         )}
         <div className="recipe-body">

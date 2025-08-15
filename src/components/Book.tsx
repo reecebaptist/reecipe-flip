@@ -18,6 +18,8 @@ function Book() {
   const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
   // Loading overlay state
   const [loading, setLoading] = React.useState<boolean>(true);
+  // Flip lock state
+  const [isLocked, setIsLocked] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const onResize = () => {
@@ -74,7 +76,7 @@ function Book() {
 
   const pageWidth = Math.max(240, calcWidth);
   const pageHeight = Math.max(320, calcHeight);
-  
+
   // Initial loading spinner – hide shortly after mount
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 350);
@@ -101,13 +103,16 @@ function Book() {
   }, []);
 
   const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index (skip image)
-  const goToRecipe = React.useCallback((recipeIndex: number) => {
-    const api = bookRef.current?.pageFlip?.();
-    if (api && typeof api.flip === "function") {
-      const target = RECIPE_FIRST_PAGE_INDEX + recipeIndex * 2;
-      api.flip(target);
-    }
-  }, [RECIPE_FIRST_PAGE_INDEX]);
+  const goToRecipe = React.useCallback(
+    (recipeIndex: number) => {
+      const api = bookRef.current?.pageFlip?.();
+      if (api && typeof api.flip === "function") {
+        const target = RECIPE_FIRST_PAGE_INDEX + recipeIndex * 2;
+        api.flip(target);
+      }
+    },
+    [RECIPE_FIRST_PAGE_INDEX]
+  );
 
   // Transition helpers to show spinner when entering/exiting Add Recipe
   const openAddRecipe = React.useCallback(() => {
@@ -153,92 +158,94 @@ function Book() {
 
   return (
     <>
-    <HTMLFlipBook
-      ref={bookRef}
-      width={pageWidth}
-      height={pageHeight}
-      maxShadowOpacity={0.5}
-      drawShadow={true}
-      showCover={true}
-      size="fixed"
-      className={""}
-      style={{}}
-      startPage={0}
-      minWidth={pageWidth}
-      maxWidth={pageWidth}
-      minHeight={pageHeight}
-      maxHeight={pageHeight}
-      flippingTime={500}
-      usePortrait={isPortrait}
-      startZIndex={0}
-      autoSize={false}
-      mobileScrollSupport={true}
-      clickEventForward={true}
-      useMouseEvents={true}
-      swipeDistance={0}
-      showPageCorners={false}
-      disableFlipByClick={false}
-    >
-      <div className="page" style={{ background: "transparent" }}>
-        <CoverPage />
-      </div>
+      <HTMLFlipBook
+        ref={bookRef}
+        width={pageWidth}
+        height={pageHeight}
+        maxShadowOpacity={0.5}
+        drawShadow={true}
+        showCover={true}
+        size="fixed"
+        className={""}
+        style={{}}
+        startPage={0}
+        minWidth={pageWidth}
+        maxWidth={pageWidth}
+        minHeight={pageHeight}
+        maxHeight={pageHeight}
+        flippingTime={500}
+        usePortrait={isPortrait}
+        startZIndex={0}
+        autoSize={false}
+        mobileScrollSupport={true}
+        clickEventForward={true}
+        showPageCorners={false}
+        disableFlipByClick={isLocked}
+        useMouseEvents={!isLocked}
+        swipeDistance={isLocked ? 100000 : 0}
+      >
+        <div className="page" style={{ background: "transparent" }}>
+          <CoverPage />
+        </div>
 
-      {/* Empty page before Author */}
-      <div className="page" style={{ background: "#ffffff" }} />
+        {/* Empty page before Author */}
+        <div className="page" style={{ background: "#ffffff" }} />
 
-      {/* Author page after empty */}
-      <div className="page" style={{ background: "#ffffff" }}>
-        <AuthorPage />
-      </div>
+        {/* Author page after empty */}
+        <div className="page" style={{ background: "#ffffff" }}>
+          <AuthorPage />
+        </div>
 
-      {/* Foreword page */}
-      <div className="page">
-        <ForewordPage romanIndex={1} />
-      </div>
+        {/* Foreword page */}
+        <div className="page">
+          <ForewordPage romanIndex={1} />
+        </div>
 
-    {/* Contents page (single, scrollable) */}
-      <div className="page" key={`contents-single`}>
-        <ContentsPage
-          items={contentsItems}
-          startIndex={0}
-          romanIndex={2}
-          isLastPage={true}
-      onAddRecipe={openAddRecipe}
-          onSelect={goToRecipe}
-          // onSelect removed per request
-        />
-      </div>
-
-      {recipeData.flatMap((recipe, index) => [
-        <div className="page" key={`${recipe.id}-img`}>
-          <div
-            className="recipe-image-full"
-            style={{ backgroundImage: `url(${recipe.image})` }}
+        {/* Contents page (single, scrollable) */}
+        <div className="page" key={`contents-single`}>
+          <ContentsPage
+            items={contentsItems}
+            startIndex={0}
+            romanIndex={2}
+            isLastPage={true}
+            onAddRecipe={openAddRecipe}
+            onSelect={goToRecipe}
+            // onSelect removed per request
           />
-        </div>,
-        <div className="page" key={recipe.id}>
-          <RecipePage
-            title={recipe.title}
-            prepTime={recipe.prepTime}
-            cookTime={recipe.cookTime}
-            ingredients={recipe.ingredients}
-            instructions={recipe.instructions}
-            pageNumber={index * 2 + 4}
-            onGoToContents={goToContents}
-          />
-        </div>,
-      ])}
+        </div>
 
-      {/* Back cover */}
-      <div className="page" style={{ background: "#ffffff" }}>
-        <BackCoverPage />
-      </div>
-    </HTMLFlipBook>
-    {loading && (
-      <div className="loading-overlay" aria-live="polite" aria-busy="true">
-        <div className="loading-spinner" />
-      </div>
-    )}
+        {recipeData.flatMap((recipe, index) => [
+          <div className="page" key={`${recipe.id}-img`}>
+            <div
+              className="recipe-image-full"
+              style={{ backgroundImage: `url(${recipe.image})` }}
+            />
+          </div>,
+          <div className="page" key={recipe.id}>
+            <RecipePage
+              title={recipe.title}
+              prepTime={recipe.prepTime}
+              cookTime={recipe.cookTime}
+              ingredients={recipe.ingredients}
+              instructions={recipe.instructions}
+              pageNumber={index * 2 + 4}
+              onGoToContents={goToContents}
+              isLocked={isLocked}
+              onToggleLock={() => setIsLocked((v) => !v)}
+            />
+          </div>,
+        ])}
+
+        {/* Back cover */}
+        <div className="page" style={{ background: "#ffffff" }}>
+          <BackCoverPage />
+        </div>
+      </HTMLFlipBook>
+      {loading && (
+        <div className="loading-overlay" aria-live="polite" aria-busy="true">
+          <div className="loading-spinner" />
+        </div>
+      )}
     </>
   );
 }
