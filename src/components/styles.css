@@ -149,6 +149,30 @@
   flex-shrink: 0;
 }
 
+/* Actions row under title on Recipe page */
+.recipe-actions-row {
+  width: 100%;
+  margin-top: -6px; /* tighten space under title */
+  margin-bottom: 12px;
+}
+.go-contents-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #1f2937;
+  cursor: pointer;
+}
+.go-contents-button:hover {
+  background: #ffffff;
+}
+.go-contents-button .material-symbols-outlined {
+  font-size: 18px;
+}
+
 .icon-button.contents-link {
   display: inline-flex;
   align-items: center;

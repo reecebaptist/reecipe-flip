@@ -20,15 +20,23 @@ function RecipePage({
   pageNumber,
   onGoToContents,
 }: RecipePageProps) {
+  const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
+    e.stopPropagation();
+  }, []);
   return (
     <div className="page-content">
       <div className="recipe-container">
         <div className="recipe-title-container">
-          <h2 className="recipe-title">{title}</h2>
-          {onGoToContents && (
+          <h2 className="recipe-title">{title}</h2>          
+        </div>
+        {onGoToContents && (
+          <div className="recipe-actions-row">
             <button
               type="button"
-              className="icon-button contents-link"
+              className="go-contents-button"
+              onPointerDownCapture={stopFlipCapture}
+              onTouchStartCapture={stopFlipCapture}
+              onMouseDownCapture={stopFlipCapture}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -36,11 +44,14 @@ function RecipePage({
               }}
               aria-label="Go to contents"
               title="Go to contents"
-            >
-              <span className="material-symbols-outlined">menu_book</span>
+           >
+              <span className="material-symbols-outlined" aria-hidden>
+                menu_book
+              </span>
+              <span>Go to contents</span>
             </button>
-          )}
-        </div>
+          </div>
+        )}
         <div className="recipe-body">
           <div className="recipe-times">
             <div className="time-block">

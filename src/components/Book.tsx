@@ -759,7 +759,7 @@ function Book() {
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
             pageNumber={index * 2 + 4}
-            // onGoToContents removed per request
+            onGoToContents={() => {}}
           />
         </div>,
       ])}
