@@ -372,12 +372,42 @@
 .editor-actions {
   margin-top: auto;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: flex-end;
+}
+
+/* Ensure action buttons sit together on the right without auto-pushing apart */
+.editor-actions .icon-button.contents-link {
+  margin-left: 0;
+  width: auto;               /* allow label */
+  min-width: 0;
+  padding: 6px 10px;         /* compact padding for text */
+  gap: 6px;                  /* space between icon and label */
+  color: inherit;            /* use color from modifier classes */
 }
 
 .icon-button.is-danger { color: #ef4444; background: #fff; }
 .icon-button.is-success { color: #10b981; background: #fff; }
+
+/* Editor actions: revert borders to default and invert Save colors relative to Cancel */
+.editor-actions .icon-button.is-danger,
+.editor-actions .icon-button.is-success {
+  border-color: #e5e7eb; /* default neutral border */
+}
+.editor-actions .icon-button.is-success {
+  background: #000000; /* black save button */
+  color: #ffffff;      /* white icon/text on filled button */
+}
+.editor-actions .icon-button.is-success:hover,
+.editor-actions .icon-button.is-success:active {
+  background: #000000; /* keep filled on hover/active */
+}
+
+/* Label next to icons in action buttons */
+.editor-actions .btn-label {
+  font-size: 0.9rem;
+  line-height: 1;
+}
 
 /* Foreword page */
 .foreword {

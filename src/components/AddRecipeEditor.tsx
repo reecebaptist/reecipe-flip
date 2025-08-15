@@ -278,6 +278,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                 title="Cancel"
               >
                 <span className="material-symbols-outlined">close</span>
+                <span className="btn-label">Cancel</span>
               </button>
               <button
                 type="button"
@@ -300,6 +301,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                 title="Save"
               >
                 <span className="material-symbols-outlined">save</span>
+                <span className="btn-label">Save</span>
               </button>
             </div>
           </div>
