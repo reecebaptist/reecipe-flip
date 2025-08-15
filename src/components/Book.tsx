@@ -244,6 +244,7 @@ function Book({ onLogout }: BookProps) {
           }}
           isLocked={isLocked}
           onToggleLock={() => setIsLocked((v) => !v)}
+          onLogout={onLogout}
         />
       </div>,
     ]);
@@ -474,7 +475,7 @@ function Book({ onLogout }: BookProps) {
 
           {/* Author page after empty */}
           <div className="page" style={{ background: "#ffffff" }}>
-            <AuthorPage />
+            <AuthorPage onLogout={onLogout} />
           </div>
 
           {/* Foreword page */}
@@ -483,7 +484,7 @@ function Book({ onLogout }: BookProps) {
           </div>
 
           {/* Contents page (single, scrollable) */}
-          <div className="page" key={`contents-single`}>
+      <div className="page" key={`contents-single`}>
             <ContentsPage
               items={contentsItems}
               startIndex={0}
@@ -492,6 +493,7 @@ function Book({ onLogout }: BookProps) {
               onAddRecipe={openAddRecipe}
               onSelect={goToRecipe}
               // onSelect removed per request
+        onLogout={onLogout}
             />
           </div>
 
@@ -499,24 +501,9 @@ function Book({ onLogout }: BookProps) {
 
           {/* Back cover */}
           <div className="page" style={{ background: "#ffffff" }}>
-            <BackCoverPage />
+            <BackCoverPage onLogout={onLogout} />
           </div>
         </HTMLFlipBook>
-        {/* Top-right actions inside the page area */}
-        <button
-          type="button"
-          className="icon-button contents-link book-logout-btn"
-          aria-label="Logout"
-          data-allow-locked="true"
-          onClick={() => {
-            if (typeof onLogout === "function") onLogout();
-          }}
-          title="Logout"
-        >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            logout
-          </span>
-        </button>
       </div>
       {loading && (
         <div className="loading-overlay" aria-live="polite" aria-busy="true">

@@ -10,6 +10,7 @@ type ContentsPageProps = {
   romanIndex?: number;
   onAddRecipe?: () => void;
   isLastPage?: boolean;
+  onLogout?: () => void;
 };
 
 function toRoman(num: number): string {
@@ -46,6 +47,7 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   romanIndex,
   onAddRecipe,
   isLastPage = false,
+  onLogout,
 }) => {
   const hasItems = items && items.length > 0;
   const roman = romanIndex ? toRoman(romanIndex) : "";
@@ -72,6 +74,27 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   }, [items, query]);
   return (
     <div className="page-content contents-page">
+      {onLogout && (
+        <button
+          type="button"
+          className="icon-button contents-link page-logout-btn"
+          aria-label="Logout"
+          title="Logout"
+          data-allow-locked="true"
+          onPointerDownCapture={stopFlipCapture}
+          onTouchStartCapture={stopFlipCapture}
+          onMouseDownCapture={stopFlipCapture}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onLogout();
+          }}
+        >
+          <span className="material-symbols-outlined" aria-hidden>
+            logout
+          </span>
+        </button>
+      )}
       <div className="recipe-container">
         {hasItems && (
           <>

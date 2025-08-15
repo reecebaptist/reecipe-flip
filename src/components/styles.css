@@ -9,6 +9,7 @@
   align-items: center;
   padding: 20px;
   text-align: center;
+  position: relative; /* allow absolute-positioned children like logout */
 }
 
 /* Author page */
@@ -205,26 +206,29 @@
   font-size: 20px;
 }
 
-/* Book-level wrapper so we can position page actions */
+/* Book-level wrapper */
 .book-wrapper {
   position: relative;
 }
-.book-logout-btn {
+
+/* Page-level logout button (top-right inside the page) */
+.icon-button.contents-link.page-logout-btn {
   position: absolute;
   top: 6px;
   right: 6px;
-  z-index: 5;
-}
-/* Make logout button black with white icon */
-.icon-button.contents-link.book-logout-btn {
+  z-index: 2;
   background: #000000;
   color: #ffffff;
   border-color: #000000;
 }
-.icon-button.contents-link.book-logout-btn:hover,
-.icon-button.contents-link.book-logout-btn:active {
+.icon-button.contents-link.page-logout-btn:hover,
+.icon-button.contents-link.page-logout-btn:active {
   background: #000000;
   color: #ffffff;
+}
+/* Ensure icon inherits white color */
+.icon-button.contents-link.page-logout-btn .material-symbols-outlined {
+  color: currentColor;
 }
 
 .recipe-body {
