@@ -181,20 +181,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           >
             <div className="recipe-title-container">
               <h2 className="recipe-title">Add a new recipe</h2>
-              <button
-                type="button"
-                className="icon-button contents-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onCancel();
-                }}
-                aria-label="Back to book"
-                title="Back to book"
-                style={{ backgroundColor: "#fff" }}
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
+              
             </div>
 
             {/* Scrollable form content */}
