@@ -9,7 +9,11 @@ import BackCoverPage from "./BackCoverPage";
 import AddRecipeEditor from "./AddRecipeEditor";
 import { recipeData } from "../data/recipes";
 
-function Book() {
+type BookProps = {
+  onLogout?: () => void;
+};
+
+function Book({ onLogout }: BookProps) {
   const bookRef = React.useRef<any>(null);
   const [vw, setVw] = React.useState<number>(window.innerWidth);
   const [vh, setVh] = React.useState<number>(window.innerHeight);
@@ -225,6 +229,7 @@ function Book() {
   return (
     <>
       <div
+        className="book-wrapper"
         onPointerDownCapture={stopLockedInteractions}
         onMouseDownCapture={stopLockedInteractions}
         onTouchStartCapture={stopLockedInteractions}
@@ -353,6 +358,19 @@ function Book() {
             <BackCoverPage />
           </div>
         </HTMLFlipBook>
+        {/* Top-right actions inside the page area */}
+        <button
+          type="button"
+          className="icon-button contents-link book-logout-btn"
+          aria-label="Logout"
+          data-allow-locked="true"
+          onClick={() => {
+            if (typeof onLogout === "function") onLogout();
+          }}
+          title="Logout"
+        >
+          <span className="material-symbols-outlined" aria-hidden="true">logout</span>
+        </button>
       </div>
       {loading && (
         <div className="loading-overlay" aria-live="polite" aria-busy="true">

@@ -145,7 +145,7 @@
 .recipe-title {
   font-size: 1.8em;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
@@ -203,6 +203,28 @@
 }
 .icon-button.contents-link .material-symbols-outlined {
   font-size: 20px;
+}
+
+/* Book-level wrapper so we can position page actions */
+.book-wrapper {
+  position: relative;
+}
+.book-logout-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
+}
+/* Make logout button black with white icon */
+.icon-button.contents-link.book-logout-btn {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+.icon-button.contents-link.book-logout-btn:hover,
+.icon-button.contents-link.book-logout-btn:active {
+  background: #000000;
+  color: #ffffff;
 }
 
 .recipe-body {
@@ -619,4 +641,117 @@
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Login page */
+.login-wrap {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0e1a26;
+  padding: 16px;
+}
+.login-card {
+  width: min(880px, 96vw);
+  min-height: 420px;
+  padding: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  background: #ffffff;
+}
+.login-media {
+  display: none; /* shown on wider screens */
+  flex: 1 1 50%;
+  background-size: cover;
+  background-position: center;
+}
+.login-pane {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+}
+.login-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login-header {
+  margin-bottom: 16px;
+  text-align: left;
+}
+.login-title {
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 800;
+  color: #111827;
+}
+.login-sub {
+  color: #6b7280;
+  margin-top: 4px;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.login-label {
+  font-weight: 600;
+}
+.login-input {
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2937;
+}
+.login-input:focus {
+  outline: none;
+  border-color: #111827;
+  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
+}
+.login-error {
+  color: #ef4444;
+  font-size: 0.95rem;
+}
+.login-button {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+}
+.login-button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.login-button:hover:not([disabled]) {
+  background: #0b1220;
+}
+.login-footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Responsive: stack on small screens */
+@media (min-width: 760px) {
+  .login-media { display: block; }
+  .login-card { min-height: 520px; }
+}
+@media (max-width: 759.98px) {
+  .login-card {
+    flex-direction: column;
+  }
+  .login-media {
+    display: block;
+    width: 100%;
+    height: 200px;
+  }
 }
