@@ -34,7 +34,7 @@ function RecipePage({
 }: RecipePageProps) {
   const TAG_ICON_MAP: Record<string, string> = React.useMemo(
     () => ({
-      breakfast: "breakfast",
+      breakfast: "breakfast_dining",
       lunch: "lunch_dining",
       dinner: "dinner_dining",
       chicken: "set_meal",

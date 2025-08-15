@@ -34,6 +34,7 @@ function Book({ onLogout }: BookProps) {
     ingredients: string[];
     instructions: string;
     image?: string;
+  tags: string[];
   }>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [isLocked, setIsLocked] = React.useState<boolean>(false);
@@ -247,6 +248,7 @@ function Book({ onLogout }: BookProps) {
                 ingredients: recipe.ingredients,
                 instructions: recipe.instructions,
                 image: recipe.imageUrl,
+                tags: recipe.tags,
               });
               setAddingRecipe(true);
               setTimeout(() => setLoading(false), 300);
@@ -356,6 +358,7 @@ function Book({ onLogout }: BookProps) {
                   cook_time: data.cookTime,
                   ingredients: data.ingredients,
                   instructions: data.instructions,
+                  tags: data.tags,
                 };
                 if (typeof image_path !== "undefined") updates.image_path = image_path;
                 await updateRecipe(idNum, updates);
@@ -368,6 +371,7 @@ function Book({ onLogout }: BookProps) {
                   instructions: data.instructions,
                   image_path: image_path ?? null,
                   is_published: true,
+                  tags: data.tags,
                 });
               }
               await loadRecipes();
@@ -390,6 +394,7 @@ function Book({ onLogout }: BookProps) {
                   ingredients: editingRecipe.ingredients,
                   instructions: editingRecipe.instructions,
                   imageUrl: editingRecipe.image,
+                  tags: editingRecipe.tags,
                 }
               : undefined
           }

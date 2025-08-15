@@ -132,6 +132,7 @@ export type CreateRecipeInput = {
     image_path?: string | null;
     is_published?: boolean;
     owner_id?: string | null; // optional; will default to current user if available
+    tags?: string[];
 };
 
 export async function createRecipe(input: CreateRecipeInput) {
@@ -155,6 +156,7 @@ export async function createRecipe(input: CreateRecipeInput) {
         image_path: input.image_path ?? null,
         is_published: input.is_published ?? true,
         owner_id: ownerId ?? null,
+        tags: Array.isArray(input.tags) ? input.tags : [],
     };
     showLoader();
     let data: any = null;
@@ -182,6 +184,7 @@ export type UpdateRecipeInput = {
     instructions?: string;
     image_path?: string | null;
     is_published?: boolean;
+    tags?: string[];
 };
 
 export async function updateRecipe(id: number, updates: UpdateRecipeInput) {

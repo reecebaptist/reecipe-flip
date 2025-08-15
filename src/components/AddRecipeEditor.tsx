@@ -14,6 +14,7 @@ type AddRecipeEditorProps = {
     instructions: string;
     imageUrl?: string;
     imageFile?: File | null;
+  tags: string[];
   }) => void;
   mode?: "add" | "edit";
   initialRecipe?: {
@@ -24,6 +25,7 @@ type AddRecipeEditorProps = {
     ingredients: string[];
     instructions: string;
     imageUrl?: string;
+  tags?: string[];
   };
   onDelete?: () => void;
 };
@@ -49,6 +51,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   const cookRef = React.useRef<HTMLInputElement | null>(null);
   const ingredientsRef = React.useRef<HTMLTextAreaElement | null>(null);
   const instructionsRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const [draftTags, setDraftTags] = React.useState<string[]>(
+    Array.isArray(initialRecipe?.tags) ? initialRecipe!.tags! : []
+  );
+  const [tagInput, setTagInput] = React.useState<string>("");
   const [missingFields, setMissingFields] = React.useState<string[]>([]);
   const [showMissingModal, setShowMissingModal] = React.useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = React.useState<boolean>(false);
@@ -116,6 +122,36 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       setNextFocusKey(null);
     }
   }, [showMissingModal, nextFocusKey]);
+
+  const COMMON_TAGS = React.useMemo(
+    () => [
+      "Breakfast",
+      "Lunch",
+      "Dinner",
+      "Chicken",
+      "Beef",
+      "Fish",
+      "Seafood",
+      "Soup",
+      "Dessert",
+      "Snack",
+      "Veg",
+      "Vegan",
+    ],
+    []
+  );
+
+  const normalizeTag = (t: string) => t.trim().replace(/\s+/g, " ");
+  const addTag = (raw: string) => {
+    const t = normalizeTag(raw);
+    if (!t) return;
+    const exists = draftTags.some((x) => x.toLowerCase() === t.toLowerCase());
+    if (exists) return;
+    setDraftTags((prev) => [...prev, t]);
+  };
+  const removeTag = (tag: string) => {
+    setDraftTags((prev) => prev.filter((x) => x !== tag));
+  };
 
   return (
     <div className="editor-wrapper" style={{ position: "relative" }}>
@@ -304,6 +340,58 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             />
           </label>
 
+          {/* Tag editor: after title, before prep time */}
+          <div style={{ marginTop: 10, marginBottom: 6 }}>
+            <span className="editor-field-label">Tags (optional)</span>
+            {draftTags.length > 0 && (
+              <div className="recipe-tags-row" style={{ marginTop: 6 }}>
+                {draftTags.map((t) => (
+                  <span key={t} className="recipe-tag-pill">
+                    <span>{t}</span>
+                    <button
+                      type="button"
+                      className="icon-button contents-link white-bg"
+                      style={{ width: 22, height: 22, marginLeft: 4 }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeTag(t);
+                      }}
+                      aria-label={`Remove ${t}`}
+                      title={`Remove ${t}`}
+                    >
+                      <span className="material-symbols-outlined" aria-hidden>
+                        close
+                      </span>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            {/* Common tag suggestions */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+              {COMMON_TAGS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className="contents-add-button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addTag(t);
+                  }}
+                  title={`Add ${t}`}
+                  aria-label={`Add ${t}`}
+                >
+                  <span className="material-symbols-outlined" aria-hidden>
+                    sell
+                  </span>
+                  <span>{t}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="editor-grid-2">
             <label style={{ display: "block" }}>
               <span className="editor-field-label">
@@ -434,6 +522,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                 instructions,
                 imageUrl: draftImageUrl || undefined,
                 imageFile: draftFile,
+                tags: draftTags,
               });
             }}
             aria-label="Save"
