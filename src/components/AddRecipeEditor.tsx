@@ -85,144 +85,148 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   return (
     <div className="editor-wrapper" style={{ position: "relative" }}>
       <HTMLFlipBook
-      ref={editorRef}
-      width={width}
-      height={height}
-      maxShadowOpacity={0}
-      drawShadow={false}
-      showCover={false}
-      size="fixed"
-      className={""}
-      style={{}}
-      startPage={0}
-      startZIndex={0}
-      minWidth={width}
-      maxWidth={width}
-      minHeight={height}
-      maxHeight={height}
-      flippingTime={250}
-      usePortrait={isPortrait}
-      autoSize={false}
-      mobileScrollSupport={true}
-      clickEventForward={false}
-      useMouseEvents={isPortrait}
-      swipeDistance={isPortrait ? 30 : 9999}
-      showPageCorners={isPortrait}
-      disableFlipByClick={false}
+        ref={editorRef}
+        width={width}
+        height={height}
+        maxShadowOpacity={0}
+        drawShadow={false}
+        showCover={false}
+        size="fixed"
+        className={""}
+        style={{}}
+        startPage={0}
+        startZIndex={0}
+        minWidth={width}
+        maxWidth={width}
+        minHeight={height}
+        maxHeight={height}
+        flippingTime={250}
+        usePortrait={isPortrait}
+        autoSize={false}
+        mobileScrollSupport={true}
+        clickEventForward={false}
+        useMouseEvents={isPortrait}
+        swipeDistance={isPortrait ? 30 : 9999}
+        showPageCorners={isPortrait}
+        disableFlipByClick={false}
       >
-      {/* Left page: photo upload/preview with inset spacing */}
-      <div className="page editor-page">
-        <div className="editor-image-wrapper">
-          <div
-            onClick={openFilePicker}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                openFilePicker();
+        {/* Left page: photo upload/preview with inset spacing */}
+        <div className="page editor-page">
+          <div className="editor-image-wrapper">
+            <div
+              onClick={openFilePicker}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openFilePicker();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              className={`editor-image-area ${preview ? "" : "is-empty"}`}
+              style={
+                preview ? { backgroundImage: `url(${preview})` } : undefined
               }
-            }}
-            role="button"
-            tabIndex={0}
-            className={`editor-image-area ${preview ? "" : "is-empty"}`}
-            style={preview ? { backgroundImage: `url(${preview})` } : undefined}
-            aria-label={preview ? "Recipe image" : "Upload recipe image"}
-            title={preview ? "Click to change image" : "Click to upload image"}
-          >
-            {!preview && <span>Click anywhere to upload a photo</span>}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-            {preview && (
-              <div className="editor-image-actions">
-                <button
-                  type="button"
-                  className="icon-button contents-link white-bg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openFilePicker();
-                  }}
-                  title="Change photo"
-                  aria-label="Change photo"
-                >
-                  <span className="material-symbols-outlined">edit</span>
-                </button>
-                <button
-                  type="button"
-                  className="icon-button contents-link white-bg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDelete();
-                  }}
-                  title="Delete photo"
-                  aria-label="Delete photo"
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
-            )}
+              aria-label={preview ? "Recipe image" : "Upload recipe image"}
+              title={
+                preview ? "Click to change image" : "Click to upload image"
+              }
+            >
+              {!preview && <span>Click anywhere to upload a photo</span>}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+              {preview && (
+                <div className="editor-image-actions">
+                  <button
+                    type="button"
+                    className="icon-button contents-link white-bg"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openFilePicker();
+                    }}
+                    title="Change photo"
+                    aria-label="Change photo"
+                  >
+                    <span className="material-symbols-outlined">edit</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button contents-link white-bg"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDelete();
+                    }}
+                    title="Delete photo"
+                    aria-label="Delete photo"
+                  >
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+          {isPortrait && (
+            <button
+              type="button"
+              className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                  editorRef.current?.pageFlip()?.flipNext();
+                } catch {}
+              }}
+              aria-label="Next page"
+              title="Next page"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          )}
         </div>
-        {isPortrait && (
-          <button
-            type="button"
-            className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              try {
-                editorRef.current?.pageFlip()?.flipNext();
-              } catch {}
-            }}
-            aria-label="Next page"
-            title="Next page"
-          >
-            <span className="material-symbols-outlined">chevron_right</span>
-          </button>
-        )}
-      </div>
 
-      {/* Right page: read-only editor hint (form moved to side panel) */}
-      <div className="page editor-page">
-        <div className="page-content no-padding">
-          <div className="recipe-container editor-recipe-container">
-            <div className="recipe-title-container">
-              <h2 className="recipe-title">
-                {mode === "edit" ? "Edit recipe" : "Add a new recipe"}
-              </h2>
-            </div>
-            {/* Hint instead of inline form */}
-            <div className="editor-form-scroll" style={{ padding: 16 }}>
-              <p style={{ margin: 0, opacity: 0.8 }}>
-                Use the editor panel to the right to edit fields. Your book
-                page will update after you press Save.
-              </p>
+        {/* Right page: read-only editor hint (form moved to side panel) */}
+        <div className="page editor-page">
+          <div className="page-content no-padding">
+            <div className="recipe-container editor-recipe-container">
+              <div className="recipe-title-container">
+                <h2 className="recipe-title">
+                  {mode === "edit" ? "Edit recipe" : "Add a new recipe"}
+                </h2>
+              </div>
+              {/* Hint instead of inline form */}
+              <div className="editor-form-scroll" style={{ padding: 16 }}>
+                <p style={{ margin: 0, opacity: 0.8 }}>
+                  Use the editor panel to the right to edit fields. Your book
+                  page will update after you press Save.
+                </p>
+              </div>
             </div>
           </div>
+          {isPortrait && (
+            <button
+              type="button"
+              className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                try {
+                  editorRef.current?.pageFlip()?.flipNext();
+                } catch {}
+              }}
+              aria-label="Next page"
+              title="Next page"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          )}
         </div>
-        {isPortrait && (
-          <button
-            type="button"
-            className="icon-button contents-link editor-edge-btn editor-edge-btn--right"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              try {
-                editorRef.current?.pageFlip()?.flipNext();
-              } catch {}
-            }}
-            aria-label="Next page"
-            title="Next page"
-          >
-            <span className="material-symbols-outlined">chevron_right</span>
-          </button>
-        )}
-      </div>
       </HTMLFlipBook>
 
       <div
@@ -246,7 +250,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           </h2>
         </div>
 
-  <div className="editor-form-scroll" style={{ flex: 1, overflowY: "auto" }}>
+        <div
+          className="editor-form-scroll"
+          style={{ flex: 1, overflowY: "auto" }}
+        >
           <label style={{ display: "block" }}>
             <span className="editor-field-label">Title</span>
             <input
@@ -282,7 +289,9 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           </div>
 
           <label style={{ display: "block" }}>
-            <span className="editor-field-label">Ingredients (one per line)</span>
+            <span className="editor-field-label">
+              Ingredients (one per line)
+            </span>
             <textarea
               ref={ingredientsRef}
               defaultValue={(initialRecipe?.ingredients || []).join("\n")}
@@ -302,22 +311,33 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           </label>
         </div>
 
-  <div className="editor-actions" style={{ paddingTop: 8, marginTop: "auto" }}>
+        <div
+          className="editor-actions"
+          style={{ paddingTop: 8, marginTop: "auto" }}
+        >
           <button
             type="button"
             className="icon-button contents-link is-danger"
-            onClick={onCancel}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // no-op by request
+            }}
             aria-label="Cancel"
             title="Cancel"
           >
             <span className="material-symbols-outlined">close</span>
             <span className="btn-label">Cancel</span>
           </button>
-          {mode === "edit" && onDelete && (
+          {mode === "edit" && (
             <button
               type="button"
               className="icon-button contents-link is-danger"
-              onClick={() => onDelete()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // no-op by request
+              }}
               aria-label="Delete"
               title="Delete"
             >
@@ -328,25 +348,10 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           <button
             type="button"
             className="icon-button contents-link is-success"
-            onClick={() => {
-              const title = (titleRef.current?.value || "").trim();
-              const prepTime = (prepRef.current?.value || "").trim();
-              const cookTime = (cookRef.current?.value || "").trim();
-              const ingredients = (ingredientsRef.current?.value || "")
-                .split(/\r?\n/)
-                .map((s) => s.trim())
-                .filter(Boolean);
-              const instructions = (instructionsRef.current?.value || "").trim();
-
-              onSave?.({
-                title,
-                prepTime,
-                cookTime,
-                ingredients,
-                instructions,
-                imageUrl: draftImageUrl || undefined,
-              });
-              onCancel();
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // no-op by request
             }}
             aria-label="Save"
             title="Save"
