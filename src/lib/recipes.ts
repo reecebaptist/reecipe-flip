@@ -14,6 +14,7 @@ export type DbRecipe = {
     is_published: boolean | null;
     owner_id: string | null; // uuid
     updated_at: string | null;
+    tags?: string[] | null;
 };
 
 // UI-friendly shape used by components
@@ -25,6 +26,7 @@ export type UIRecipe = {
     cookTime: string;
     ingredients: string[];
     instructions: string;
+    tags: string[];
     ownerId?: string | null;
 };
 
@@ -45,10 +47,10 @@ export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
     let data: any = null;
     let error: any = null;
     try {
-        const resp = await supabase
+    const resp = await supabase
             .from("recipes")
             .select(
-                "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at, owner_id"
+        "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at, owner_id, tags"
             )
             .eq("is_published", true)
             .order("created_at", { ascending: true });
@@ -73,6 +75,7 @@ export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
         cookTime: r.cook_time || "",
         ingredients: Array.isArray(r.ingredients) ? r.ingredients : [],
         instructions: r.instructions || "",
+    tags: Array.isArray(r.tags) ? r.tags : [],
         ownerId: r.owner_id ?? null,
     }));
 }

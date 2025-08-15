@@ -7,6 +7,7 @@ type RecipePageProps = {
   cookTime: string;
   ingredients: string[];
   instructions: string;
+  tags?: string[];
   pageNumber: number;
   onGoToContents?: () => void;
   isLocked?: boolean;
@@ -22,6 +23,7 @@ function RecipePage({
   cookTime,
   ingredients,
   instructions,
+  tags,
   pageNumber,
   onGoToContents,
   isLocked,
@@ -30,6 +32,28 @@ function RecipePage({
   onLogout,
   canEdit = true,
 }: RecipePageProps) {
+  const TAG_ICON_MAP: Record<string, string> = React.useMemo(
+    () => ({
+      breakfast: "breakfast",
+      lunch: "lunch_dining",
+      dinner: "dinner_dining",
+      chicken: "set_meal",
+      veg: "eco",
+      vegetarian: "eco",
+      vegan: "eco",
+      dessert: "cake",
+      snack: "fastfood",
+      beef: "set_meal",
+      fish: "set_meal",
+      seafood: "set_meal",
+      soup: "ramen_dining",
+    }),
+    []
+  );
+  const getTagIcon = React.useCallback(
+    (tag: string) => TAG_ICON_MAP[tag.trim().toLowerCase()] || "label",
+    [TAG_ICON_MAP]
+  );
   const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
   }, []);
@@ -60,6 +84,18 @@ function RecipePage({
         <div className="recipe-title-container">
           <h2 className="recipe-title">{title}</h2>
         </div>
+        {Array.isArray(tags) && tags.length > 0 && (
+          <div className="recipe-tags-row" aria-label="Tags">
+            {tags.map((t) => (
+              <span key={t} className="recipe-tag-pill">
+                <span className="material-symbols-outlined" aria-hidden>
+                  {getTagIcon(t)}
+                </span>
+                <span>{t}</span>
+              </span>
+            ))}
+          </div>
+        )}
         {(onGoToContents || onEditRecipe || onToggleLock) && (
           <div className="recipe-actions-row">
             {onGoToContents && (

@@ -157,6 +157,30 @@
   flex-shrink: 0;
 }
 
+/* Tags under title */
+.recipe-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: -6px; /* tuck closer to title */
+  margin-bottom: 20px;
+}
+.recipe-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px; /* smooth rounded corners */
+  background: #000000; /* black background */
+  color: #ffffff; /* white text */
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.recipe-tag-pill .material-symbols-outlined {
+  font-size: 18px; /* smaller icon */
+  line-height: 1;
+}
+
 /* Actions row under title on Recipe page */
 .recipe-actions-row {
   width: 100%;

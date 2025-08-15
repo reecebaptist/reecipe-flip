@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles.css";
 
-export type ContentsItem = { title: string; page: number };
+export type ContentsItem = { title: string; page: number; ingredients?: string[] };
 
 type ContentsPageProps = {
   items: ContentsItem[];
@@ -70,7 +70,12 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   const displayedItems = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return items;
-    return items.filter((it) => it.title.toLowerCase().includes(q));
+    return items.filter((it) => {
+      const inTitle = it.title.toLowerCase().includes(q);
+      const ing = Array.isArray(it.ingredients) ? it.ingredients : [];
+      const inIngs = ing.some((s) => (s || "").toLowerCase().includes(q));
+      return inTitle || inIngs;
+    });
   }, [items, query]);
   return (
     <div className="page-content contents-page">

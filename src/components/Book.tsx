@@ -231,6 +231,7 @@ function Book({ onLogout }: BookProps) {
           cookTime={recipe.cookTime}
           ingredients={recipe.ingredients}
           instructions={recipe.instructions}
+          tags={recipe.tags}
           pageNumber={index * 2 + 4}
           onGoToContents={goToContents}
       canEdit={Boolean(recipe.ownerId && currentUserId && recipe.ownerId === currentUserId)}
@@ -268,6 +269,7 @@ function Book({ onLogout }: BookProps) {
   const contentsItems: ContentsItem[] = recipes.map((r, index) => ({
     title: r.title,
     page: index * 2 + 4,
+    ingredients: r.ingredients,
   }));
 
   React.useEffect(() => {
