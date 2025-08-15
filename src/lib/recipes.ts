@@ -154,6 +154,19 @@ export async function createRecipe(input: CreateRecipeInput) {
     };
 
     export async function updateRecipe(id: number, updates: UpdateRecipeInput) {
+        // Get current image_path before applying update
+        let previousImagePath: string | null = null;
+        try {
+            const { data: before } = await supabase
+                .from("recipes")
+                .select("image_path")
+                .eq("id", id)
+                .maybeSingle();
+            previousImagePath = (before as any)?.image_path ?? null;
+        } catch {
+            // ignore; proceed without previous image cleanup
+        }
+
         const { data, error } = await supabase
             .from("recipes")
             .update({ ...updates, updated_at: new Date().toISOString() })
@@ -165,6 +178,19 @@ export async function createRecipe(input: CreateRecipeInput) {
             throw new Error(
                 "No matching recipe found or permission denied by RLS while updating."
             );
+        }
+
+        // If a new image path was provided (including null to clear) and it differs from the previous one,
+        // attempt to delete the previous image from storage.
+        if (typeof updates.image_path !== "undefined") {
+            const newPath = updates.image_path ?? null;
+            if (previousImagePath && previousImagePath !== newPath) {
+                try {
+                    await supabase.storage.from(BUCKET).remove([previousImagePath]);
+                } catch {
+                    // ignore storage cleanup errors
+                }
+            }
         }
         return data as DbRecipe;
     }

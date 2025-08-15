@@ -49,6 +49,11 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   const cookRef = React.useRef<HTMLInputElement | null>(null);
   const ingredientsRef = React.useRef<HTMLTextAreaElement | null>(null);
   const instructionsRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const [missingFields, setMissingFields] = React.useState<string[]>([]);
+  const [showMissingModal, setShowMissingModal] = React.useState<boolean>(false);
+  const [nextFocusKey, setNextFocusKey] = React.useState<
+    null | "title" | "prep" | "cook" | "ingredients" | "steps"
+  >(null);
 
   React.useEffect(() => {
     return () => {
@@ -86,6 +91,30 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
     setDraftFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  // After modal closes, focus the first missing field
+  React.useEffect(() => {
+    if (!showMissingModal && nextFocusKey) {
+      const refMap = {
+        title: titleRef.current,
+        prep: prepRef.current,
+        cook: cookRef.current,
+        ingredients: ingredientsRef.current,
+        steps: instructionsRef.current,
+      } as const;
+      const el = refMap[nextFocusKey];
+      if (el && typeof (el as any).focus === "function") {
+        (el as any).focus();
+        if (
+          el instanceof HTMLInputElement ||
+          el instanceof HTMLTextAreaElement
+        ) {
+          try { el.select(); } catch {}
+        }
+      }
+      setNextFocusKey(null);
+    }
+  }, [showMissingModal, nextFocusKey]);
 
   return (
     <div className="editor-wrapper" style={{ position: "relative" }}>
@@ -260,35 +289,47 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           style={{ flex: 1, overflowY: "auto" }}
         >
           <label style={{ display: "block" }}>
-            <span className="editor-field-label">Title</span>
+            <span className="editor-field-label">
+              Title <span className="required-star" aria-hidden>*</span>
+            </span>
             <input
               ref={titleRef}
               type="text"
               defaultValue={initialRecipe?.title || ""}
               className="editor-input"
               placeholder="Recipe title"
+              required
+              aria-required="true"
             />
           </label>
 
           <div className="editor-grid-2">
             <label style={{ display: "block" }}>
-              <span className="editor-field-label">Prep Time</span>
+              <span className="editor-field-label">
+                Prep Time <span className="required-star" aria-hidden>*</span>
+              </span>
               <input
                 ref={prepRef}
                 type="text"
                 defaultValue={initialRecipe?.prepTime || ""}
                 className="editor-input"
                 placeholder="e.g. 15 mins"
+                required
+                aria-required="true"
               />
             </label>
             <label style={{ display: "block" }}>
-              <span className="editor-field-label">Cook Time</span>
+              <span className="editor-field-label">
+                Cook Time <span className="required-star" aria-hidden>*</span>
+              </span>
               <input
                 ref={cookRef}
                 type="text"
                 defaultValue={initialRecipe?.cookTime || ""}
                 className="editor-input"
                 placeholder="e.g. 30 mins"
+                required
+                aria-required="true"
               />
             </label>
           </div>
@@ -296,22 +337,29 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           <label style={{ display: "block" }}>
             <span className="editor-field-label">
               Ingredients (one per line)
+              <span className="required-star" aria-hidden> *</span>
             </span>
             <textarea
               ref={ingredientsRef}
               defaultValue={(initialRecipe?.ingredients || []).join("\n")}
               className="editor-textarea ingredients"
               placeholder={"Flour\nSugar\nEggs"}
+              required
+              aria-required="true"
             />
           </label>
 
           <label style={{ display: "block" }}>
-            <span className="editor-field-label">Steps</span>
+            <span className="editor-field-label">
+              Steps <span className="required-star" aria-hidden>*</span>
+            </span>
             <textarea
               ref={instructionsRef}
               defaultValue={initialRecipe?.instructions || ""}
               className="editor-textarea steps"
               placeholder="Step-by-step instructions"
+              required
+              aria-required="true"
             />
           </label>
         </div>
@@ -356,6 +404,26 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
               const instructions = (
                 instructionsRef.current?.value || ""
               ).trim();
+              const missing: string[] = [];
+              let firstKey: null | "title" | "prep" | "cook" | "ingredients" | "steps" = null;
+              if (!title) missing.push("Title");
+              if (!title && !firstKey) firstKey = "title";
+              if (!prepTime) missing.push("Prep Time");
+              if (!prepTime && !firstKey) firstKey = "prep";
+              if (!cookTime) missing.push("Cook Time");
+              if (!cookTime && !firstKey) firstKey = "cook";
+              if (ingredients.length === 0) missing.push("Ingredients");
+              if (ingredients.length === 0 && !firstKey) firstKey = "ingredients";
+              if (!instructions) missing.push("Steps");
+              if (!instructions && !firstKey) firstKey = "steps";
+
+              if (missing.length > 0) {
+                setMissingFields(missing);
+                setNextFocusKey(firstKey);
+                setShowMissingModal(true);
+                // focus the first missing field after closing modal handled by user
+                return;
+              }
 
               onSave?.({
                 title,
@@ -375,6 +443,52 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           </button>
         </div>
       </div>
+
+      {showMissingModal && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="missing-modal-title"
+          onClick={() => setShowMissingModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setShowMissingModal(false);
+          }}
+        >
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+            tabIndex={-1}
+          >
+            <div className="modal-header">
+              <h3 id="missing-modal-title" className="modal-title">
+                Missing required fields
+              </h3>
+            </div>
+            <div className="modal-body">
+              <p>Please fill in the following:</p>
+              <ul>
+                {missingFields.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="icon-button contents-link"
+                onClick={() => setShowMissingModal(false)}
+                autoFocus
+              >
+                <span className="material-symbols-outlined" aria-hidden>
+                  check
+                </span>
+                <span className="btn-label">OK</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
