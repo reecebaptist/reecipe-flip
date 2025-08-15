@@ -1,7 +1,12 @@
 import React from "react";
 import "./styles.css";
 
-export type ContentsItem = { title: string; page: number; ingredients?: string[] };
+export type ContentsItem = {
+  title: string;
+  page: number;
+  ingredients?: string[];
+  tags?: string[];
+};
 
 type ContentsPageProps = {
   items: ContentsItem[];
@@ -74,7 +79,9 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
       const inTitle = it.title.toLowerCase().includes(q);
       const ing = Array.isArray(it.ingredients) ? it.ingredients : [];
       const inIngs = ing.some((s) => (s || "").toLowerCase().includes(q));
-      return inTitle || inIngs;
+  const tgs = Array.isArray(it.tags) ? it.tags : [];
+  const inTags = tgs.some((t) => (t || "").toLowerCase().includes(q));
+  return inTitle || inIngs || inTags;
     });
   }, [items, query]);
   return (

@@ -272,6 +272,7 @@ function Book({ onLogout }: BookProps) {
     title: r.title,
     page: index * 2 + 4,
     ingredients: r.ingredients,
+  tags: r.tags,
   }));
 
   React.useEffect(() => {
