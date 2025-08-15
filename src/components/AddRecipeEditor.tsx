@@ -41,21 +41,12 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
     initialRecipe?.imageUrl || ""
   );
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [draftTitle, setDraftTitle] = React.useState<string>(
-    initialRecipe?.title || ""
-  );
-  const [draftPrep, setDraftPrep] = React.useState<string>(
-    initialRecipe?.prepTime || ""
-  );
-  const [draftCook, setDraftCook] = React.useState<string>(
-    initialRecipe?.cookTime || ""
-  );
-  const [draftIngredients, setDraftIngredients] = React.useState<string>(
-    initialRecipe?.ingredients?.join("\n") || ""
-  );
-  const [draftInstructions, setDraftInstructions] = React.useState<string>(
-    initialRecipe?.instructions || ""
-  );
+  // Uncontrolled inputs via refs (edited in side panel only)
+  const titleRef = React.useRef<HTMLInputElement | null>(null);
+  const prepRef = React.useRef<HTMLInputElement | null>(null);
+  const cookRef = React.useRef<HTMLInputElement | null>(null);
+  const ingredientsRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const instructionsRef = React.useRef<HTMLTextAreaElement | null>(null);
 
   // Cleanup object URLs
   React.useEffect(() => {
@@ -95,7 +86,8 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   };
 
   return (
-    <HTMLFlipBook
+    <div className="editor-wrapper" style={{ position: "relative" }}>
+      <HTMLFlipBook
       ref={editorRef}
       width={width}
       height={height}
@@ -120,7 +112,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       swipeDistance={isPortrait ? 30 : 9999}
       showPageCorners={isPortrait}
       disableFlipByClick={false}
-    >
+      >
       {/* Left page: photo upload/preview with inset spacing */}
       <div className="page editor-page">
         <div className="editor-image-wrapper">
@@ -198,7 +190,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
         )}
       </div>
 
-      {/* Right page: details form */}
+      {/* Right page: read-only editor hint (form moved to side panel) */}
       <div className="page editor-page">
         <div className="page-content no-padding">
           <div className="recipe-container editor-recipe-container">
@@ -207,117 +199,12 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                 {mode === "edit" ? "Edit recipe" : "Add a new recipe"}
               </h2>
             </div>
-
-            {/* Scrollable form content */}
-            <div className="editor-form-scroll">
-              {/* Title full-width */}
-              <label style={{ display: "block" }}>
-                <span className="editor-field-label">Title</span>
-                <input
-                  type="text"
-                  value={draftTitle}
-                  onChange={(e) => setDraftTitle(e.target.value)}
-                  className="editor-input"
-                  placeholder="Recipe title"
-                />
-              </label>
-
-              {/* Prep and Cook on one line, half each */}
-              <div className="editor-grid-2">
-                <label style={{ display: "block" }}>
-                  <span className="editor-field-label">Prep Time</span>
-                  <input
-                    type="text"
-                    value={draftPrep}
-                    onChange={(e) => setDraftPrep(e.target.value)}
-                    className="editor-input"
-                    placeholder="e.g. 15 mins"
-                  />
-                </label>
-                <label style={{ display: "block" }}>
-                  <span className="editor-field-label">Cook Time</span>
-                  <input
-                    type="text"
-                    value={draftCook}
-                    onChange={(e) => setDraftCook(e.target.value)}
-                    className="editor-input"
-                    placeholder="e.g. 30 mins"
-                  />
-                </label>
-              </div>
-
-              {/* Ingredients full-width */}
-              <label style={{ display: "block" }}>
-                <span className="editor-field-label">
-                  Ingredients (one per line)
-                </span>
-                <textarea
-                  value={draftIngredients}
-                  onChange={(e) => setDraftIngredients(e.target.value)}
-                  className="editor-textarea ingredients"
-                  placeholder={"Flour\nSugar\nEggs"}
-                />
-              </label>
-
-              {/* Steps (Instructions) full-width textarea */}
-              <label style={{ display: "block" }}>
-                <span className="editor-field-label">Steps</span>
-                <textarea
-                  value={draftInstructions}
-                  onChange={(e) => setDraftInstructions(e.target.value)}
-                  className="editor-textarea steps"
-                  placeholder="Step-by-step instructions"
-                />
-              </label>
-            </div>
-
-            {/* Buttons pinned to bottom */}
-            <div className="editor-actions">
-              <button
-                type="button"
-                className="icon-button contents-link is-danger"
-                onClick={onCancel}
-                aria-label="Cancel"
-                title="Cancel"
-              >
-                <span className="material-symbols-outlined">close</span>
-                <span className="btn-label">Cancel</span>
-              </button>
-              {mode === "edit" && onDelete && (
-                <button
-                  type="button"
-                  className="icon-button contents-link is-danger"
-                  onClick={() => onDelete()}
-                  aria-label="Delete"
-                  title="Delete"
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                  <span className="btn-label">Delete</span>
-                </button>
-              )}
-              <button
-                type="button"
-                className="icon-button contents-link is-success"
-                onClick={() => {
-                  onSave?.({
-                    title: draftTitle.trim(),
-                    prepTime: draftPrep.trim(),
-                    cookTime: draftCook.trim(),
-                    ingredients: draftIngredients
-                      .split(/\r?\n/)
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                    instructions: draftInstructions.trim(),
-                    imageUrl: draftImageUrl || undefined,
-                  });
-                  onCancel();
-                }}
-                aria-label="Save"
-                title="Save"
-              >
-                <span className="material-symbols-outlined">save</span>
-                <span className="btn-label">Save</span>
-              </button>
+            {/* Hint instead of inline form */}
+            <div className="editor-form-scroll" style={{ padding: 16 }}>
+              <p style={{ margin: 0, opacity: 0.8 }}>
+                Use the editor panel to the right to edit fields. Your book
+                page will update after you press Save.
+              </p>
             </div>
           </div>
         </div>
@@ -339,7 +226,141 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           </button>
         )}
       </div>
-    </HTMLFlipBook>
+      </HTMLFlipBook>
+
+      {/* Side panel editor (uncontrolled inputs to avoid FlipBook rerenders) */}
+      <div
+        className="editor-side-panel"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: isPortrait ? 0 : width,
+          height: height,
+          width: width,
+          background: "#fff",
+          padding: "32px 32px 32px 32px",
+          display: "flex",
+          flexDirection: "column",
+          zIndex: 10,
+        }}
+      >
+        <div className="recipe-title-container" style={{ marginBottom: 8 }}>
+          <h2 className="recipe-title">
+            {mode === "edit" ? "Edit recipe" : "Add a new recipe"}
+          </h2>
+        </div>
+
+  <div className="editor-form-scroll" style={{ flex: 1, overflowY: "auto" }}>
+          <label style={{ display: "block" }}>
+            <span className="editor-field-label">Title</span>
+            <input
+              ref={titleRef}
+              type="text"
+              defaultValue={initialRecipe?.title || ""}
+              className="editor-input"
+              placeholder="Recipe title"
+            />
+          </label>
+
+          <div className="editor-grid-2">
+            <label style={{ display: "block" }}>
+              <span className="editor-field-label">Prep Time</span>
+              <input
+                ref={prepRef}
+                type="text"
+                defaultValue={initialRecipe?.prepTime || ""}
+                className="editor-input"
+                placeholder="e.g. 15 mins"
+              />
+            </label>
+            <label style={{ display: "block" }}>
+              <span className="editor-field-label">Cook Time</span>
+              <input
+                ref={cookRef}
+                type="text"
+                defaultValue={initialRecipe?.cookTime || ""}
+                className="editor-input"
+                placeholder="e.g. 30 mins"
+              />
+            </label>
+          </div>
+
+          <label style={{ display: "block" }}>
+            <span className="editor-field-label">Ingredients (one per line)</span>
+            <textarea
+              ref={ingredientsRef}
+              defaultValue={(initialRecipe?.ingredients || []).join("\n")}
+              className="editor-textarea ingredients"
+              placeholder={"Flour\nSugar\nEggs"}
+            />
+          </label>
+
+          <label style={{ display: "block" }}>
+            <span className="editor-field-label">Steps</span>
+            <textarea
+              ref={instructionsRef}
+              defaultValue={initialRecipe?.instructions || ""}
+              className="editor-textarea steps"
+              placeholder="Step-by-step instructions"
+            />
+          </label>
+        </div>
+
+  <div className="editor-actions" style={{ paddingTop: 8, marginTop: "auto" }}>
+          <button
+            type="button"
+            className="icon-button contents-link is-danger"
+            onClick={onCancel}
+            aria-label="Cancel"
+            title="Cancel"
+          >
+            <span className="material-symbols-outlined">close</span>
+            <span className="btn-label">Cancel</span>
+          </button>
+          {mode === "edit" && onDelete && (
+            <button
+              type="button"
+              className="icon-button contents-link is-danger"
+              onClick={() => onDelete()}
+              aria-label="Delete"
+              title="Delete"
+            >
+              <span className="material-symbols-outlined">delete</span>
+              <span className="btn-label">Delete</span>
+            </button>
+          )}
+          <button
+            type="button"
+            className="icon-button contents-link is-success"
+            onClick={() => {
+              const title = (titleRef.current?.value || "").trim();
+              const prepTime = (prepRef.current?.value || "").trim();
+              const cookTime = (cookRef.current?.value || "").trim();
+              const ingredients = (ingredientsRef.current?.value || "")
+                .split(/\r?\n/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              const instructions = (instructionsRef.current?.value || "").trim();
+
+              onSave?.({
+                title,
+                prepTime,
+                cookTime,
+                ingredients,
+                instructions,
+                imageUrl: draftImageUrl || undefined,
+              });
+              onCancel();
+            }}
+            aria-label="Save"
+            title="Save"
+          >
+            <span className="material-symbols-outlined">save</span>
+            <span className="btn-label">Save</span>
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
