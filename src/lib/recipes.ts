@@ -159,8 +159,13 @@ export async function createRecipe(input: CreateRecipeInput) {
             .update({ ...updates, updated_at: new Date().toISOString() })
             .eq("id", id)
             .select("*")
-            .single();
+            .maybeSingle();
         if (error) throw error;
+        if (!data) {
+            throw new Error(
+                "No matching recipe found or permission denied by RLS while updating."
+            );
+        }
         return data as DbRecipe;
     }
 
@@ -170,7 +175,7 @@ export async function createRecipe(input: CreateRecipeInput) {
             .from("recipes")
             .select("image_path")
             .eq("id", id)
-            .single();
+            .maybeSingle();
         const imagePath: string | null = (row as any)?.image_path ?? null;
         const { error } = await supabase.from("recipes").delete().eq("id", id);
         if (error) throw error;
