@@ -670,6 +670,14 @@ function Book() {
 
   // (Navigation to specific pages removed as requested)
 
+  const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
+  const goToContents = React.useCallback(() => {
+    const api = bookRef.current?.pageFlip?.();
+    if (api && typeof api.flip === "function") {
+      api.flip(CONTENTS_PAGE_INDEX);
+    }
+  }, []);
+
   // Render Add Recipe Editor as a dedicated two-page spread with flipping disabled
   if (addingRecipe) {
     return (
@@ -759,7 +767,7 @@ function Book() {
             ingredients={recipe.ingredients}
             instructions={recipe.instructions}
             pageNumber={index * 2 + 4}
-            onGoToContents={() => {}}
+            onGoToContents={goToContents}
           />
         </div>,
       ])}
