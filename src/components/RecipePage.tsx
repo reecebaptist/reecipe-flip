@@ -34,7 +34,7 @@ function RecipePage({
     e.stopPropagation();
   }, []);
   return (
-    <div className="page-content">
+    <div className="page-content recipe-page">
       {onLogout && (
         <button
           type="button"

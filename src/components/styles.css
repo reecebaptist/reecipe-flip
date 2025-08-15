@@ -39,6 +39,13 @@
   background-color: #ffffff; /* ensure solid background to avoid underlying shading */
 }
 
+/* Recipe page wrapper: left-align like contents */
+.recipe-page {
+  align-items: stretch; /* children take full width */
+  justify-content: flex-start; /* start at top */
+  text-align: left; /* left text alignment */
+}
+
 .contents-page .recipe-container {
   align-items: flex-start;
 }
