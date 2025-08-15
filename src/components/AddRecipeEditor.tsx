@@ -51,6 +51,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   const instructionsRef = React.useRef<HTMLTextAreaElement | null>(null);
   const [missingFields, setMissingFields] = React.useState<string[]>([]);
   const [showMissingModal, setShowMissingModal] = React.useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState<boolean>(false);
   const [nextFocusKey, setNextFocusKey] = React.useState<
     null | "title" | "prep" | "cook" | "ingredients" | "steps"
   >(null);
@@ -382,7 +383,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             <button
               type="button"
               className="icon-button contents-link is-danger"
-              onClick={() => onDelete?.()}
+              onClick={() => setShowDeleteModal(true)}
               aria-label="Delete"
               title="Delete"
             >
@@ -484,6 +485,50 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                   check
                 </span>
                 <span className="btn-label">OK</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+          onClick={() => setShowDeleteModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setShowDeleteModal(false);
+          }}
+        >
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} tabIndex={-1}>
+            <div className="modal-header">
+              <h3 id="delete-modal-title" className="modal-title">Delete recipe?</h3>
+            </div>
+            <div className="modal-body">
+              <p>Are you sure you want to delete this recipe? This action cannot be undone.</p>
+            </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="icon-button contents-link is-cancel"
+                onClick={() => setShowDeleteModal(false)}
+                autoFocus
+              >
+                <span className="material-symbols-outlined" aria-hidden>close</span>
+                <span className="btn-label">Cancel</span>
+              </button>
+              <button
+                type="button"
+                className="icon-button contents-link"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  onDelete?.();
+                }}
+              >
+                <span className="material-symbols-outlined" aria-hidden>delete</span>
+                <span className="btn-label">Delete</span>
               </button>
             </div>
           </div>

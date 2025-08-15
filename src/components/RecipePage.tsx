@@ -13,6 +13,7 @@ type RecipePageProps = {
   onToggleLock?: () => void;
   onEditRecipe?: () => void;
   onLogout?: () => void;
+  canEdit?: boolean;
 };
 
 function RecipePage({
@@ -27,6 +28,7 @@ function RecipePage({
   onToggleLock,
   onEditRecipe,
   onLogout,
+  canEdit = true,
 }: RecipePageProps) {
   const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
@@ -92,17 +94,17 @@ function RecipePage({
                 onPointerDownCapture={stopFlipCapture}
                 onTouchStartCapture={stopFlipCapture}
                 onMouseDownCapture={stopFlipCapture}
-                disabled={!!isLocked}
+                disabled={!!isLocked || !canEdit}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (!isLocked) {
+                  if (!isLocked && canEdit) {
                     onEditRecipe();
                   }
                 }}
                 aria-label="Edit recipe"
                 title="Edit recipe"
-                aria-disabled={!!isLocked}
+                aria-disabled={!!isLocked || !canEdit}
               >
                 <span className="material-symbols-outlined" aria-hidden>
                   edit

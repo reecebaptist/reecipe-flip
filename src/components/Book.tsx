@@ -15,6 +15,7 @@ import {
   updateRecipe,
   deleteRecipe,
 } from "../lib/recipes";
+import supabase from "../lib/supabaseClient";
 
 type BookProps = {
   onLogout?: () => void;
@@ -41,6 +42,7 @@ function Book({ onLogout }: BookProps) {
   const revertingRef = React.useRef<boolean>(false);
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
   const [recipes, setRecipes] = React.useState<UIRecipe[]>([]);
+  const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
 
   const loadRecipes = React.useCallback(async () => {
     try {
@@ -58,6 +60,12 @@ function Book({ onLogout }: BookProps) {
     let mounted = true;
     (async () => {
       if (!mounted) return;
+      try {
+        const { data } = await supabase.auth.getUser();
+        setCurrentUserId(data?.user?.id ?? null);
+      } catch {
+        setCurrentUserId(null);
+      }
       await loadRecipes();
     })();
     return () => {
@@ -209,7 +217,7 @@ function Book({ onLogout }: BookProps) {
         </div>,
       ];
     }
-    return recipes.flatMap((recipe, index) => [
+  return recipes.flatMap((recipe, index) => [
       <div className="page" key={`${recipe.id}-img`}>
         <div
           className="recipe-image-full"
@@ -225,6 +233,7 @@ function Book({ onLogout }: BookProps) {
           instructions={recipe.instructions}
           pageNumber={index * 2 + 4}
           onGoToContents={goToContents}
+      canEdit={Boolean(recipe.ownerId && currentUserId && recipe.ownerId === currentUserId)}
           onEditRecipe={() => {
             if (isLocked) return;
             setLoading(true);
@@ -249,7 +258,7 @@ function Book({ onLogout }: BookProps) {
       </div>,
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipes, isSupabaseConfigured, isLocked]);
+  }, [recipes, isSupabaseConfigured, isLocked, currentUserId]);
 
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 350);

@@ -25,6 +25,7 @@ export type UIRecipe = {
     cookTime: string;
     ingredients: string[];
     instructions: string;
+    ownerId?: string | null;
 };
 
 const BUCKET = "recipes-images";
@@ -47,7 +48,7 @@ export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
         const resp = await supabase
             .from("recipes")
             .select(
-                "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at"
+                "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at, owner_id"
             )
             .eq("is_published", true)
             .order("created_at", { ascending: true });
@@ -72,6 +73,7 @@ export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
         cookTime: r.cook_time || "",
         ingredients: Array.isArray(r.ingredients) ? r.ingredients : [],
         instructions: r.instructions || "",
+        ownerId: r.owner_id ?? null,
     }));
 }
 
@@ -169,111 +171,68 @@ export async function createRecipe(input: CreateRecipeInput) {
     return data as DbRecipe;
 }
 
-    export type UpdateRecipeInput = {
-        title?: string;
-        prep_time?: string;
-        cook_time?: string;
-        ingredients?: string[];
-        instructions?: string;
-        image_path?: string | null;
-        is_published?: boolean;
-    };
+export type UpdateRecipeInput = {
+    title?: string;
+    prep_time?: string;
+    cook_time?: string;
+    ingredients?: string[];
+    instructions?: string;
+    image_path?: string | null;
+    is_published?: boolean;
+};
 
-    export async function updateRecipe(id: number, updates: UpdateRecipeInput) {
-        // Get current image_path before applying update
-        let previousImagePath: string | null = null;
-        try {
-            showLoader();
-            let before: any = null;
-            try {
-                const resp = await supabase
-                    .from("recipes")
-                    .select("image_path")
-                    .eq("id", id)
-                    .maybeSingle();
-                before = resp.data;
-            } finally {
-                hideLoader();
-            }
-            previousImagePath = (before as any)?.image_path ?? null;
-        } catch {
-            // ignore; proceed without previous image cleanup
-        }
-
+export async function updateRecipe(id: number, updates: UpdateRecipeInput) {
+    // Get current image_path before applying update
+    let previousImagePath: string | null = null;
+    try {
         showLoader();
-        let data: any = null;
-        let error: any = null;
-        try {
-            const resp = await supabase
-                .from("recipes")
-                .update({ ...updates, updated_at: new Date().toISOString() })
-                .eq("id", id)
-                .select("*")
-                .maybeSingle();
-            data = resp.data;
-            error = resp.error;
-        } finally {
-            hideLoader();
-        }
-        if (error) throw error;
-        if (!data) {
-            throw new Error(
-                "No matching recipe found or permission denied by RLS while updating."
-            );
-        }
-
-        // If a new image path was provided (including null to clear) and it differs from the previous one,
-        // attempt to delete the previous image from storage.
-        if (typeof updates.image_path !== "undefined") {
-            const newPath = updates.image_path ?? null;
-            if (previousImagePath && previousImagePath !== newPath) {
-                try {
-                    showLoader();
-                    try {
-                        await supabase.storage.from(BUCKET).remove([previousImagePath]);
-                    } finally {
-                        hideLoader();
-                    }
-                } catch {
-                    // ignore storage cleanup errors
-                }
-            }
-        }
-        return data as DbRecipe;
-    }
-
-    export async function deleteRecipe(id: number) {
-        // Try to delete associated image from storage if present
-        showLoader();
-        let row: any = null;
+        let before: any = null;
         try {
             const resp = await supabase
                 .from("recipes")
                 .select("image_path")
                 .eq("id", id)
                 .maybeSingle();
-            row = resp.data;
+            before = resp.data;
         } finally {
             hideLoader();
         }
-        const imagePath: string | null = (row as any)?.image_path ?? null;
-        showLoader();
-        let error: any = null;
-        try {
-            const resp = await supabase
-                .from("recipes")
-                .delete()
-                .eq("id", id);
-            error = resp.error;
-        } finally {
-            hideLoader();
-        }
-        if (error) throw error;
-        if (imagePath) {
+        previousImagePath = (before as any)?.image_path ?? null;
+    } catch {
+        // ignore; proceed without previous image cleanup
+    }
+
+    showLoader();
+    let data: any = null;
+    let error: any = null;
+    try {
+        const resp = await supabase
+            .from("recipes")
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq("id", id)
+            .select("*")
+            .maybeSingle();
+        data = resp.data;
+        error = resp.error;
+    } finally {
+        hideLoader();
+    }
+    if (error) throw error;
+    if (!data) {
+        throw new Error(
+            "No matching recipe found or permission denied by RLS while updating."
+        );
+    }
+
+    // If a new image path was provided (including null to clear) and it differs from the previous one,
+    // attempt to delete the previous image from storage.
+    if (typeof updates.image_path !== "undefined") {
+        const newPath = updates.image_path ?? null;
+        if (previousImagePath && previousImagePath !== newPath) {
             try {
                 showLoader();
                 try {
-                    await supabase.storage.from(BUCKET).remove([imagePath]);
+                    await supabase.storage.from(BUCKET).remove([previousImagePath]);
                 } finally {
                     hideLoader();
                 }
@@ -282,3 +241,46 @@ export async function createRecipe(input: CreateRecipeInput) {
             }
         }
     }
+    return data as DbRecipe;
+}
+
+export async function deleteRecipe(id: number) {
+    // Try to delete associated image from storage if present
+    showLoader();
+    let row: any = null;
+    try {
+        const resp = await supabase
+            .from("recipes")
+            .select("image_path")
+            .eq("id", id)
+            .maybeSingle();
+        row = resp.data;
+    } finally {
+        hideLoader();
+    }
+    const imagePath: string | null = (row as any)?.image_path ?? null;
+    showLoader();
+    let error: any = null;
+    try {
+        const resp = await supabase
+            .from("recipes")
+            .delete()
+            .eq("id", id);
+        error = resp.error;
+    } finally {
+        hideLoader();
+    }
+    if (error) throw error;
+    if (imagePath) {
+        try {
+            showLoader();
+            try {
+                await supabase.storage.from(BUCKET).remove([imagePath]);
+            } finally {
+                hideLoader();
+            }
+        } catch {
+            // ignore storage cleanup errors
+        }
+    }
+}
