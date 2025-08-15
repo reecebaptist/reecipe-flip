@@ -4,6 +4,20 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+## Supabase setup
+
+This project uses Supabase. To configure locally:
+
+1. Copy `.env.example` to `.env` in the project root.
+2. Fill in `REACT_APP_SUPABASE_URL` and `REACT_APP_SUPABASE_ANON_KEY` from your Supabase project settings.
+3. Restart the dev server if it's running.
+
+The Supabase client is initialized in `src/lib/supabaseClient.ts` and can be imported as:
+
+```
+import { supabase } from './lib/supabaseClient';
+```
+
 In the project directory, you can run:
 
 ### `npm start`
