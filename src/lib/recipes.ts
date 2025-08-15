@@ -1,4 +1,5 @@
 import supabase from "./supabaseClient";
+import { showLoader, hideLoader } from "./loader";
 
 // Database row shape for the `recipes` table
 export type DbRecipe = {
@@ -39,13 +40,22 @@ function toPublicImageUrl(path: string | null | undefined): string {
 }
 
 export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
-    const { data, error } = await supabase
-        .from("recipes")
-        .select(
-            "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at"
-        )
-        .eq("is_published", true)
-        .order("created_at", { ascending: true });
+    showLoader();
+    let data: any = null;
+    let error: any = null;
+    try {
+        const resp = await supabase
+            .from("recipes")
+            .select(
+                "id, title, image_path, cook_time, prep_time, ingredients, instructions, is_published, created_at"
+            )
+            .eq("is_published", true)
+            .order("created_at", { ascending: true });
+        data = resp.data;
+        error = resp.error;
+    } finally {
+        hideLoader();
+    }
 
     if (error) {
         // eslint-disable-next-line no-console
@@ -90,12 +100,19 @@ export async function uploadRecipeImage(
         // ignore – will fallback to public folder
     }
     const path = genImagePath(file.name, resolvedOwner);
-    const { error } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, {
-            contentType: file.type || "image/*",
-            upsert: false,
-        });
+    showLoader();
+    let error: any = null;
+    try {
+        const resp = await supabase.storage
+            .from(BUCKET)
+            .upload(path, file, {
+                contentType: file.type || "image/*",
+                upsert: false,
+            });
+        error = resp.error;
+    } finally {
+        hideLoader();
+    }
     if (error) throw error;
     const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
     return { path, publicUrl: data?.publicUrl || "" };
@@ -134,11 +151,20 @@ export async function createRecipe(input: CreateRecipeInput) {
         is_published: input.is_published ?? true,
         owner_id: ownerId ?? null,
     };
-    const { data, error } = await supabase
-        .from("recipes")
-        .insert(payload)
-        .select("*")
-        .single();
+    showLoader();
+    let data: any = null;
+    let error: any = null;
+    try {
+        const resp = await supabase
+            .from("recipes")
+            .insert(payload)
+            .select("*")
+            .single();
+        data = resp.data;
+        error = resp.error;
+    } finally {
+        hideLoader();
+    }
     if (error) throw error;
     return data as DbRecipe;
 }
@@ -157,22 +183,38 @@ export async function createRecipe(input: CreateRecipeInput) {
         // Get current image_path before applying update
         let previousImagePath: string | null = null;
         try {
-            const { data: before } = await supabase
-                .from("recipes")
-                .select("image_path")
-                .eq("id", id)
-                .maybeSingle();
+            showLoader();
+            let before: any = null;
+            try {
+                const resp = await supabase
+                    .from("recipes")
+                    .select("image_path")
+                    .eq("id", id)
+                    .maybeSingle();
+                before = resp.data;
+            } finally {
+                hideLoader();
+            }
             previousImagePath = (before as any)?.image_path ?? null;
         } catch {
             // ignore; proceed without previous image cleanup
         }
 
-        const { data, error } = await supabase
-            .from("recipes")
-            .update({ ...updates, updated_at: new Date().toISOString() })
-            .eq("id", id)
-            .select("*")
-            .maybeSingle();
+        showLoader();
+        let data: any = null;
+        let error: any = null;
+        try {
+            const resp = await supabase
+                .from("recipes")
+                .update({ ...updates, updated_at: new Date().toISOString() })
+                .eq("id", id)
+                .select("*")
+                .maybeSingle();
+            data = resp.data;
+            error = resp.error;
+        } finally {
+            hideLoader();
+        }
         if (error) throw error;
         if (!data) {
             throw new Error(
@@ -186,7 +228,12 @@ export async function createRecipe(input: CreateRecipeInput) {
             const newPath = updates.image_path ?? null;
             if (previousImagePath && previousImagePath !== newPath) {
                 try {
-                    await supabase.storage.from(BUCKET).remove([previousImagePath]);
+                    showLoader();
+                    try {
+                        await supabase.storage.from(BUCKET).remove([previousImagePath]);
+                    } finally {
+                        hideLoader();
+                    }
                 } catch {
                     // ignore storage cleanup errors
                 }
@@ -197,17 +244,39 @@ export async function createRecipe(input: CreateRecipeInput) {
 
     export async function deleteRecipe(id: number) {
         // Try to delete associated image from storage if present
-        const { data: row } = await supabase
-            .from("recipes")
-            .select("image_path")
-            .eq("id", id)
-            .maybeSingle();
+        showLoader();
+        let row: any = null;
+        try {
+            const resp = await supabase
+                .from("recipes")
+                .select("image_path")
+                .eq("id", id)
+                .maybeSingle();
+            row = resp.data;
+        } finally {
+            hideLoader();
+        }
         const imagePath: string | null = (row as any)?.image_path ?? null;
-        const { error } = await supabase.from("recipes").delete().eq("id", id);
+        showLoader();
+        let error: any = null;
+        try {
+            const resp = await supabase
+                .from("recipes")
+                .delete()
+                .eq("id", id);
+            error = resp.error;
+        } finally {
+            hideLoader();
+        }
         if (error) throw error;
         if (imagePath) {
             try {
-                await supabase.storage.from(BUCKET).remove([imagePath]);
+                showLoader();
+                try {
+                    await supabase.storage.from(BUCKET).remove([imagePath]);
+                } finally {
+                    hideLoader();
+                }
             } catch {
                 // ignore storage cleanup errors
             }

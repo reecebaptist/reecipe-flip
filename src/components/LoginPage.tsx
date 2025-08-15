@@ -2,6 +2,7 @@ import React from "react";
 import "./styles.css";
 import coverImg from "../assets/images/cover-bg.jpg";
 import supabase from "../lib/supabaseClient";
+import { showLoader, hideLoader } from "../lib/loader";
 
 type Props = {
 	onSuccess: () => void;
@@ -32,15 +33,20 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
 		try {
 			if (supabaseConfigured) {
 				// Treat username as email for Supabase Auth
-				const { error: authError } = await supabase.auth.signInWithPassword({
-					email: username,
-					password,
-				});
-				if (authError) {
-					setError(authError.message || "Sign-in failed");
-				} else {
-					localStorage.setItem("rf_auth", "1");
-					onSuccess();
+				showLoader();
+				try {
+					const { error: authError } = await supabase.auth.signInWithPassword({
+						email: username,
+						password,
+					});
+					if (authError) {
+						setError(authError.message || "Sign-in failed");
+					} else {
+						localStorage.setItem("rf_auth", "1");
+						onSuccess();
+					}
+				} finally {
+					hideLoader();
 				}
 			} else {
 				// Fallback to env-based mock auth

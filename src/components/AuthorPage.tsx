@@ -34,7 +34,7 @@ const AuthorPage: React.FC<AuthorPageProps> = ({ onLogout }) => {
       )}
       <div className="author-container">
         <div className="byline">By</div>
-        <div className="author-name">Reece D'Souza</div>
+        <div className="author-name">Reece B. D'Souza</div>
       </div>
     </div>
   );
