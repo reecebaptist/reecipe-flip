@@ -7,7 +7,14 @@ import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
 import BackCoverPage from "./BackCoverPage";
 import AddRecipeEditor from "./AddRecipeEditor";
-import { fetchPublishedRecipes, UIRecipe } from "../lib/recipes";
+import {
+  fetchPublishedRecipes,
+  UIRecipe,
+  uploadRecipeImage,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
+} from "../lib/recipes";
 
 type BookProps = {
   onLogout?: () => void;
@@ -19,6 +26,7 @@ function Book({ onLogout }: BookProps) {
   const [vh, setVh] = React.useState<number>(window.innerHeight);
   const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
   const [editingRecipe, setEditingRecipe] = React.useState<null | {
+    id?: string;
     title: string;
     prepTime: string;
     cookTime: string;
@@ -34,23 +42,28 @@ function Book({ onLogout }: BookProps) {
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
   const [recipes, setRecipes] = React.useState<UIRecipe[]>([]);
 
+  const loadRecipes = React.useCallback(async () => {
+    try {
+      const items = await fetchPublishedRecipes();
+      setRecipes(items);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching recipes", e);
+      setRecipes([]);
+    }
+  }, []);
+
   // Load recipes from Supabase
   React.useEffect(() => {
     let mounted = true;
     (async () => {
-      try {
-        const items = await fetchPublishedRecipes();
-        if (mounted) setRecipes(items);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching recipes", e);
-        if (mounted) setRecipes([]);
-      }
+      if (!mounted) return;
+      await loadRecipes();
     })();
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [loadRecipes]);
 
   // Stop interactions when locked except on elements explicitly allowed
   const stopLockedInteractions = React.useCallback(
@@ -217,6 +230,7 @@ function Book({ onLogout }: BookProps) {
             setLoading(true);
             setTimeout(() => {
               setEditingRecipe({
+                id: recipe.id,
                 title: recipe.title,
                 prepTime: recipe.prepTime,
                 cookTime: recipe.cookTime,
@@ -307,16 +321,57 @@ function Book({ onLogout }: BookProps) {
             setEditingRecipe(null);
             closeAddRecipe(true);
           }}
-          onSave={(data) => {
-            // Placeholder for future integration
-            console.log("Saved draft:", data);
-            // Close editor and flip to Contents
-            closeAddRecipe(true);
+          onSave={async (data) => {
+            try {
+              setLoading(true);
+              const isEdit = !!editingRecipe?.id;
+              let image_path: string | undefined;
+              if (data.imageFile) {
+                try {
+                  const up = await uploadRecipeImage(data.imageFile);
+                  image_path = up.path;
+                } catch (e) {
+                  // eslint-disable-next-line no-console
+                  console.error("Image upload failed:", e);
+                }
+              }
+
+              if (isEdit) {
+                const idNum = Number(editingRecipe!.id);
+                const updates: any = {
+                  title: data.title,
+                  prep_time: data.prepTime,
+                  cook_time: data.cookTime,
+                  ingredients: data.ingredients,
+                  instructions: data.instructions,
+                };
+                if (typeof image_path !== "undefined") updates.image_path = image_path;
+                await updateRecipe(idNum, updates);
+              } else {
+                await createRecipe({
+                  title: data.title,
+                  prep_time: data.prepTime,
+                  cook_time: data.cookTime,
+                  ingredients: data.ingredients,
+                  instructions: data.instructions,
+                  image_path: image_path ?? null,
+                  is_published: true,
+                });
+              }
+              await loadRecipes();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error("Save failed:", e);
+            } finally {
+              setEditingRecipe(null);
+              closeAddRecipe(true);
+            }
           }}
           mode={editingRecipe ? "edit" : "add"}
           initialRecipe={
             editingRecipe
               ? {
+                  id: editingRecipe.id,
                   title: editingRecipe.title,
                   prepTime: editingRecipe.prepTime,
                   cookTime: editingRecipe.cookTime,
@@ -326,11 +381,19 @@ function Book({ onLogout }: BookProps) {
                 }
               : undefined
           }
-          onDelete={() => {
-            // Placeholder: remove recipe from data source here
-            console.log("Deleted recipe:", editingRecipe?.title);
-            setEditingRecipe(null);
-            closeAddRecipe(true);
+          onDelete={async () => {
+            if (!editingRecipe?.id) return;
+            try {
+              setLoading(true);
+              await deleteRecipe(Number(editingRecipe.id));
+              await loadRecipes();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error("Delete failed:", e);
+            } finally {
+              setEditingRecipe(null);
+              closeAddRecipe(true);
+            }
           }}
         />
         {loading && (

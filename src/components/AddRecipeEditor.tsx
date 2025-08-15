@@ -13,9 +13,11 @@ type AddRecipeEditorProps = {
     ingredients: string[];
     instructions: string;
     imageUrl?: string;
+    imageFile?: File | null;
   }) => void;
   mode?: "add" | "edit";
   initialRecipe?: {
+    id?: string;
     title: string;
     prepTime: string;
     cookTime: string;
@@ -40,6 +42,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   const [draftImageUrl, setDraftImageUrl] = React.useState<string>(
     initialRecipe?.imageUrl || ""
   );
+  const [draftFile, setDraftFile] = React.useState<File | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const titleRef = React.useRef<HTMLInputElement | null>(null);
   const prepRef = React.useRef<HTMLInputElement | null>(null);
@@ -70,6 +73,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       }
       const url = URL.createObjectURL(f);
       setDraftImageUrl(url);
+      setDraftFile(f);
     }
   };
   const handleDelete = () => {
@@ -79,6 +83,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       } catch {}
     }
     setDraftImageUrl("");
+    setDraftFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -318,11 +323,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           <button
             type="button"
             className="icon-button contents-link is-danger"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // no-op by request
-            }}
+            onClick={onCancel}
             aria-label="Cancel"
             title="Cancel"
           >
@@ -333,11 +334,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             <button
               type="button"
               className="icon-button contents-link is-danger"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // no-op by request
-              }}
+              onClick={() => onDelete?.()}
               aria-label="Delete"
               title="Delete"
             >
@@ -348,10 +345,27 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
           <button
             type="button"
             className="icon-button contents-link is-success"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // no-op by request
+            onClick={() => {
+              const title = (titleRef.current?.value || "").trim();
+              const prepTime = (prepRef.current?.value || "").trim();
+              const cookTime = (cookRef.current?.value || "").trim();
+              const ingredients = (ingredientsRef.current?.value || "")
+                .split(/\r?\n/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              const instructions = (
+                instructionsRef.current?.value || ""
+              ).trim();
+
+              onSave?.({
+                title,
+                prepTime,
+                cookTime,
+                ingredients,
+                instructions,
+                imageUrl: draftImageUrl || undefined,
+                imageFile: draftFile,
+              });
             }}
             aria-label="Save"
             title="Save"

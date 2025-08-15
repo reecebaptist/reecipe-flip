@@ -64,3 +64,121 @@ export async function fetchPublishedRecipes(): Promise<UIRecipe[]> {
         instructions: r.instructions || "",
     }));
 }
+
+// Utility: generate a unique storage path for an image
+function genImagePath(filename: string, ownerId?: string | null): string {
+    const ext = (filename.split(".").pop() || "jpg").toLowerCase();
+    const safeExt = ext.match(/^[a-z0-9]+$/) ? ext : "jpg";
+    const ts = Date.now();
+    const rand = Math.random().toString(36).slice(2, 8);
+    const dir = ownerId ? `users/${ownerId}` : "public";
+    return `${dir}/recipe-${ts}-${rand}.${safeExt}`;
+}
+
+export async function uploadRecipeImage(
+    file: File,
+    ownerId?: string | null
+): Promise<{ path: string; publicUrl: string }> {
+    // If no explicit owner provided, try to use the current authenticated user
+    let resolvedOwner = ownerId ?? null;
+    try {
+        if (!resolvedOwner) {
+            const { data } = await supabase.auth.getUser();
+            resolvedOwner = data?.user?.id ?? null;
+        }
+    } catch {
+        // ignore – will fallback to public folder
+    }
+    const path = genImagePath(file.name, resolvedOwner);
+    const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, {
+            contentType: file.type || "image/*",
+            upsert: false,
+        });
+    if (error) throw error;
+    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    return { path, publicUrl: data?.publicUrl || "" };
+}
+
+export type CreateRecipeInput = {
+    title: string;
+    prep_time?: string;
+    cook_time?: string;
+    ingredients?: string[];
+    instructions?: string;
+    image_path?: string | null;
+    is_published?: boolean;
+    owner_id?: string | null; // optional; will default to current user if available
+};
+
+export async function createRecipe(input: CreateRecipeInput) {
+    // Resolve owner_id to the current authenticated user if not provided
+    let ownerId: string | null | undefined = input.owner_id;
+    if (!ownerId) {
+        try {
+            const { data } = await supabase.auth.getUser();
+            ownerId = data?.user?.id ?? null;
+        } catch {
+            ownerId = null;
+        }
+    }
+
+    const payload = {
+        title: input.title,
+        prep_time: input.prep_time ?? "",
+        cook_time: input.cook_time ?? "",
+        ingredients: input.ingredients ?? [],
+        instructions: input.instructions ?? "",
+        image_path: input.image_path ?? null,
+        is_published: input.is_published ?? true,
+        owner_id: ownerId ?? null,
+    };
+    const { data, error } = await supabase
+        .from("recipes")
+        .insert(payload)
+        .select("*")
+        .single();
+    if (error) throw error;
+    return data as DbRecipe;
+}
+
+    export type UpdateRecipeInput = {
+        title?: string;
+        prep_time?: string;
+        cook_time?: string;
+        ingredients?: string[];
+        instructions?: string;
+        image_path?: string | null;
+        is_published?: boolean;
+    };
+
+    export async function updateRecipe(id: number, updates: UpdateRecipeInput) {
+        const { data, error } = await supabase
+            .from("recipes")
+            .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq("id", id)
+            .select("*")
+            .single();
+        if (error) throw error;
+        return data as DbRecipe;
+    }
+
+    export async function deleteRecipe(id: number) {
+        // Try to delete associated image from storage if present
+        const { data: row } = await supabase
+            .from("recipes")
+            .select("image_path")
+            .eq("id", id)
+            .single();
+        const imagePath: string | null = (row as any)?.image_path ?? null;
+        const { error } = await supabase.from("recipes").delete().eq("id", id);
+        if (error) throw error;
+        if (imagePath) {
+            try {
+                await supabase.storage.from(BUCKET).remove([imagePath]);
+            } catch {
+                // ignore storage cleanup errors
+            }
+        }
+    }

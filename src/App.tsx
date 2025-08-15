@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import Book from "./components/Book";
 import LoginPage from "./components/LoginPage";
+import supabase from "./lib/supabaseClient";
 
 const App: React.FC = () => {
   const [authed, setAuthed] = React.useState<boolean>(
@@ -9,7 +10,10 @@ const App: React.FC = () => {
   );
 
   const handleLogin = () => setAuthed(true);
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {}
     try {
       localStorage.removeItem("rf_auth");
     } catch {}

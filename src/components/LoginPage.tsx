@@ -1,6 +1,7 @@
 import React from "react";
 import "./styles.css";
 import coverImg from "../assets/images/cover-bg.jpg";
+import supabase from "../lib/supabaseClient";
 
 type Props = {
 	onSuccess: () => void;
@@ -14,6 +15,9 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
 
 	const expectedUser = process.env.REACT_APP_USERNAME || "";
 	const expectedPass = process.env.REACT_APP_PASSWORD || "";
+	const supabaseConfigured = Boolean(
+		process.env.REACT_APP_SUPABASE_URL && process.env.REACT_APP_SUPABASE_ANON_KEY
+	);
 
 	React.useEffect(() => {
 		const authed = localStorage.getItem("rf_auth") === "1";
@@ -21,19 +25,36 @@ const LoginPage: React.FC<Props> = ({ onSuccess }) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
 		setSubmitting(true);
-		setTimeout(() => {
-			if (username === expectedUser && password === expectedPass) {
-				localStorage.setItem("rf_auth", "1");
-				onSuccess();
+		try {
+			if (supabaseConfigured) {
+				// Treat username as email for Supabase Auth
+				const { error: authError } = await supabase.auth.signInWithPassword({
+					email: username,
+					password,
+				});
+				if (authError) {
+					setError(authError.message || "Sign-in failed");
+				} else {
+					localStorage.setItem("rf_auth", "1");
+					onSuccess();
+				}
 			} else {
-				setError("Invalid username or password");
+				// Fallback to env-based mock auth
+				await new Promise((r) => setTimeout(r, 300));
+				if (username === expectedUser && password === expectedPass) {
+					localStorage.setItem("rf_auth", "1");
+					onSuccess();
+				} else {
+					setError("Invalid username or password");
+				}
 			}
+		} finally {
 			setSubmitting(false);
-		}, 300);
+		}
 	};
 
 	return (
