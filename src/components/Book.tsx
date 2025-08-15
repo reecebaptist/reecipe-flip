@@ -16,6 +16,8 @@ function Book() {
   const [vh, setVh] = React.useState<number>(window.innerHeight);
   // Add Recipe editor mode state
   const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
+  // Loading overlay state
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     const onResize = () => {
@@ -72,6 +74,12 @@ function Book() {
 
   const pageWidth = Math.max(240, calcWidth);
   const pageHeight = Math.max(320, calcHeight);
+  
+  // Initial loading spinner – hide shortly after mount
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(t);
+  }, []);
   // recipeData is imported from ../data/recipes
 
   // Build Contents items from recipeData (image page is before each recipe page)
@@ -101,23 +109,50 @@ function Book() {
     }
   }, [RECIPE_FIRST_PAGE_INDEX]);
 
+  // Transition helpers to show spinner when entering/exiting Add Recipe
+  const openAddRecipe = React.useCallback(() => {
+    setLoading(true);
+    // Small delay to display spinner during transition
+    setTimeout(() => {
+      setAddingRecipe(true);
+      // Allow editor to mount, then fade spinner
+      setTimeout(() => setLoading(false), 300);
+    }, 150);
+  }, []);
+
+  const closeAddRecipe = React.useCallback(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setAddingRecipe(false);
+      setTimeout(() => setLoading(false), 300);
+    }, 150);
+  }, []);
+
   // Render Add Recipe Editor as a dedicated two-page spread with flipping disabled
   if (addingRecipe) {
     return (
-      <AddRecipeEditor
-        width={pageWidth}
-        height={pageHeight}
-        isPortrait={isPortrait}
-        onCancel={() => setAddingRecipe(false)}
-        onSave={(data) => {
-          // Placeholder for future integration
-          console.log("Saved draft:", data);
-        }}
-      />
+      <>
+        <AddRecipeEditor
+          width={pageWidth}
+          height={pageHeight}
+          isPortrait={isPortrait}
+          onCancel={closeAddRecipe}
+          onSave={(data) => {
+            // Placeholder for future integration
+            console.log("Saved draft:", data);
+          }}
+        />
+        {loading && (
+          <div className="loading-overlay" aria-live="polite" aria-busy="true">
+            <div className="loading-spinner" />
+          </div>
+        )}
+      </>
     );
   }
 
   return (
+    <>
     <HTMLFlipBook
       ref={bookRef}
       width={pageWidth}
@@ -161,16 +196,14 @@ function Book() {
         <ForewordPage romanIndex={1} />
       </div>
 
-      {/* Contents page (single, scrollable) */}
+    {/* Contents page (single, scrollable) */}
       <div className="page" key={`contents-single`}>
         <ContentsPage
           items={contentsItems}
           startIndex={0}
           romanIndex={2}
           isLastPage={true}
-          onAddRecipe={() => {
-            setAddingRecipe(true);
-          }}
+      onAddRecipe={openAddRecipe}
           onSelect={goToRecipe}
           // onSelect removed per request
         />
@@ -201,6 +234,12 @@ function Book() {
         <BackCoverPage />
       </div>
     </HTMLFlipBook>
+    {loading && (
+      <div className="loading-overlay" aria-live="polite" aria-busy="true">
+        <div className="loading-spinner" />
+      </div>
+    )}
+    </>
   );
 }
 
