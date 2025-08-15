@@ -172,6 +172,11 @@
 .go-contents-button:hover {
   background: #ffffff;
 }
+.go-contents-button[disabled],
+.go-contents-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .go-contents-button .material-symbols-outlined {
   font-size: 18px;
 }

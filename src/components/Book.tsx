@@ -20,6 +20,22 @@ function Book() {
   const [loading, setLoading] = React.useState<boolean>(true);
   // Flip lock state
   const [isLocked, setIsLocked] = React.useState<boolean>(false);
+  // Track current page and guard re-entrant revert loops
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const revertingRef = React.useRef<boolean>(false);
+
+  // Stop interactions when locked except on elements explicitly allowed
+  const stopLockedInteractions = React.useCallback((e: React.SyntheticEvent) => {
+    if (!isLocked) return;
+    const el = e.target as HTMLElement | null;
+    const allowed = (el && typeof (el as any).closest === "function")
+      ? el.closest('[data-allow-locked="true"]')
+      : null;
+    if (!allowed) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [isLocked]);
 
   React.useEffect(() => {
     const onResize = () => {
@@ -96,22 +112,24 @@ function Book() {
 
   const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
   const goToContents = React.useCallback(() => {
+    if (isLocked) return; // prevent navigation while locked
     const api = bookRef.current?.pageFlip?.();
     if (api && typeof api.flip === "function") {
       api.flip(CONTENTS_PAGE_INDEX);
     }
-  }, []);
+  }, [isLocked]);
 
   const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index (skip image)
   const goToRecipe = React.useCallback(
     (recipeIndex: number) => {
+      if (isLocked) return; // prevent navigation while locked
       const api = bookRef.current?.pageFlip?.();
       if (api && typeof api.flip === "function") {
         const target = RECIPE_FIRST_PAGE_INDEX + recipeIndex * 2;
         api.flip(target);
       }
     },
-    [RECIPE_FIRST_PAGE_INDEX]
+    [RECIPE_FIRST_PAGE_INDEX, isLocked]
   );
 
   // Transition helpers to show spinner when entering/exiting Add Recipe
@@ -158,6 +176,12 @@ function Book() {
 
   return (
     <>
+      <div
+        onPointerDownCapture={stopLockedInteractions}
+        onMouseDownCapture={stopLockedInteractions}
+        onTouchStartCapture={stopLockedInteractions}
+        onClickCapture={stopLockedInteractions}
+      >
       <HTMLFlipBook
         ref={bookRef}
         width={pageWidth}
@@ -178,11 +202,27 @@ function Book() {
         startZIndex={0}
         autoSize={false}
         mobileScrollSupport={true}
-        clickEventForward={true}
+        clickEventForward={!isLocked}
         showPageCorners={false}
         disableFlipByClick={isLocked}
         useMouseEvents={!isLocked}
         swipeDistance={isLocked ? 100000 : 0}
+        onFlip={(e: any) => {
+          const newPage = typeof e?.data === "number" ? e.data : undefined;
+          if (typeof newPage !== "number") return;
+          if (isLocked && !revertingRef.current) {
+            const api = bookRef.current?.pageFlip?.();
+            if (api && typeof api.flip === "function") {
+              revertingRef.current = true;
+              setTimeout(() => {
+                api.flip(currentPage);
+                revertingRef.current = false;
+              }, 0);
+            }
+          } else if (!revertingRef.current) {
+            setCurrentPage(newPage);
+          }
+        }}
       >
         <div className="page" style={{ background: "transparent" }}>
           <CoverPage />
@@ -240,7 +280,8 @@ function Book() {
         <div className="page" style={{ background: "#ffffff" }}>
           <BackCoverPage />
         </div>
-      </HTMLFlipBook>
+  </HTMLFlipBook>
+  </div>
       {loading && (
         <div className="loading-overlay" aria-live="polite" aria-busy="true">
           <div className="loading-spinner" />

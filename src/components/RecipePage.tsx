@@ -42,13 +42,17 @@ function RecipePage({
                 onPointerDownCapture={stopFlipCapture}
                 onTouchStartCapture={stopFlipCapture}
                 onMouseDownCapture={stopFlipCapture}
+                disabled={!!isLocked}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onGoToContents();
+                  if (!isLocked) {
+                    onGoToContents();
+                  }
                 }}
                 aria-label="Go to contents"
                 title="Go to contents"
+                aria-disabled={!!isLocked}
               >
                 <span className="material-symbols-outlined" aria-hidden>
                   menu_book
@@ -60,6 +64,7 @@ function RecipePage({
               <button
                 type="button"
                 className="go-contents-button"
+                data-allow-locked="true"
                 onPointerDownCapture={stopFlipCapture}
                 onTouchStartCapture={stopFlipCapture}
                 onMouseDownCapture={stopFlipCapture}
