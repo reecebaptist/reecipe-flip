@@ -154,13 +154,16 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
               onMouseDownCapture={stopFlipCapture}
             >
               <div className={listClass}>
-                {displayedItems.map((item, idx) => (
+                {displayedItems.map((item, idx) => {
+                  const originalIndex = items.findIndex(
+                    (it) => it.page === item.page && it.title === item.title
+                  );
+                  const targetIndex = startIndex + Math.max(originalIndex, 0);
+                  return (
                   <div
                     className="contents-item"
                     key={`${item.title}-${item.page}`}
-                    onClick={
-                      onSelect ? () => onSelect(startIndex + idx) : undefined
-                    }
+                    onClick={onSelect ? () => onSelect(targetIndex) : undefined}
                     role={onSelect ? "button" : undefined}
                     tabIndex={onSelect ? 0 : undefined}
                   >
@@ -169,7 +172,8 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                     <span className="dots"></span>
                     <span className="page">{item.page}</span>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </>
