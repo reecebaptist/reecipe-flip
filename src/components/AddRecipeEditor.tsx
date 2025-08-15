@@ -23,6 +23,7 @@ type AddRecipeEditorProps = {
     instructions: string;
     imageUrl?: string;
   };
+  onDelete?: () => void;
 };
 
 const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
@@ -33,6 +34,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   onSave,
   mode = "add",
   initialRecipe,
+  onDelete,
 }) => {
   const editorRef = React.useRef<any>(null);
   const [draftImageUrl, setDraftImageUrl] = React.useState<string>(
@@ -290,6 +292,18 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
                 <span className="material-symbols-outlined">close</span>
                 <span className="btn-label">Cancel</span>
               </button>
+              {mode === "edit" && onDelete && (
+                <button
+                  type="button"
+                  className="icon-button contents-link is-danger"
+                  onClick={() => onDelete()}
+                  aria-label="Delete"
+                  title="Delete"
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                  <span className="btn-label">Delete</span>
+                </button>
+              )}
               <button
                 type="button"
                 className="icon-button contents-link is-success"

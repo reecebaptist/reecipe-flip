@@ -211,7 +211,7 @@ function Book() {
           isPortrait={isPortrait}
           onCancel={() => {
             setEditingRecipe(null);
-            closeAddRecipe();
+            closeAddRecipe(true);
           }}
           onSave={(data) => {
             // Placeholder for future integration
@@ -232,6 +232,12 @@ function Book() {
                 }
               : undefined
           }
+          onDelete={() => {
+            // Placeholder: remove recipe from data source here
+            console.log("Deleted recipe:", editingRecipe?.title);
+            setEditingRecipe(null);
+            closeAddRecipe(true);
+          }}
         />
         {loading && (
           <div className="loading-overlay" aria-live="polite" aria-busy="true">
