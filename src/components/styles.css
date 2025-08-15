@@ -598,9 +598,10 @@
 
 /* Single-page scroll area between header and footer */
 .contents-scroll {
-  flex: 1 1 auto;
+  /* flex: 1 1 auto; */
   min-height: 0; /* allow proper flex scrolling */
-  width: 100%;
+  width: 100%;  
+  padding-bottom: 20px;
   overflow: auto; /* enable scroll only in this region */
 }
 
