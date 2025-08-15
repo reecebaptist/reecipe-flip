@@ -7,9 +7,9 @@ type ContentsPageProps = {
   items: ContentsItem[];
   startIndex?: number;
   onSelect?: (globalIndex: number) => void;
-  romanIndex?: number; // 1-based index for roman page numbering
-  onAddRecipe?: () => void; // optional handler for Add Recipe button
-  isLastPage?: boolean; // only show Add button on the last contents page
+  romanIndex?: number;
+  onAddRecipe?: () => void;
+  isLastPage?: boolean;
 };
 
 function toRoman(num: number): string {

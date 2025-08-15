@@ -1,7 +1,7 @@
 import "./styles.css";
 
 type ForewordPageProps = {
-  romanIndex?: number; // 1-based index for roman page numbering
+  romanIndex?: number;
 };
 
 function toRoman(num: number): string {

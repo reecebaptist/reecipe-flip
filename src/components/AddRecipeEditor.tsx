@@ -41,14 +41,12 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
     initialRecipe?.imageUrl || ""
   );
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  // Uncontrolled inputs via refs (edited in side panel only)
   const titleRef = React.useRef<HTMLInputElement | null>(null);
   const prepRef = React.useRef<HTMLInputElement | null>(null);
   const cookRef = React.useRef<HTMLInputElement | null>(null);
   const ingredientsRef = React.useRef<HTMLTextAreaElement | null>(null);
   const instructionsRef = React.useRef<HTMLTextAreaElement | null>(null);
 
-  // Cleanup object URLs
   React.useEffect(() => {
     return () => {
       if (draftImageUrl?.startsWith("blob:")) {
@@ -65,7 +63,6 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const f = e.target.files?.[0];
     if (f) {
-      // Revoke previous blob URL if any
       if (draftImageUrl && draftImageUrl.startsWith("blob:")) {
         try {
           URL.revokeObjectURL(draftImageUrl);
@@ -228,7 +225,6 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
       </div>
       </HTMLFlipBook>
 
-      {/* Side panel editor (uncontrolled inputs to avoid FlipBook rerenders) */}
       <div
         className="editor-side-panel"
         style={{

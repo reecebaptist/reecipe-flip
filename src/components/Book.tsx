@@ -11,10 +11,8 @@ import { recipeData } from "../data/recipes";
 
 function Book() {
   const bookRef = React.useRef<any>(null);
-  // Track viewport size for responsive sizing
   const [vw, setVw] = React.useState<number>(window.innerWidth);
   const [vh, setVh] = React.useState<number>(window.innerHeight);
-  // Add Recipe editor mode state
   const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
   const [editingRecipe, setEditingRecipe] = React.useState<null | {
     title: string;
@@ -24,16 +22,11 @@ function Book() {
     instructions: string;
     image?: string;
   }>(null);
-  // Loading overlay state
   const [loading, setLoading] = React.useState<boolean>(true);
-  // Flip lock state
   const [isLocked, setIsLocked] = React.useState<boolean>(false);
-  // Pending navigation target after leaving editor
   const [pendingNav, setPendingNav] = React.useState<null | "contents">(null);
-  // Track current page and guard re-entrant revert loops
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const revertingRef = React.useRef<boolean>(false);
-  // Allow a one-time programmatic flip to bypass lock revert logic
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
 
   // Stop interactions when locked except on elements explicitly allowed
@@ -62,25 +55,22 @@ function Book() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Refresh page on orientation change (portrait ↔ landscape)
   React.useEffect(() => {
     const mql = window.matchMedia("(orientation: portrait)");
     const handler = () => {
-      // Reload to force a clean layout recalculation after orientation switch
       window.location.reload();
     };
     if (mql.addEventListener) {
       mql.addEventListener("change", handler);
     } else {
-      // Safari < 14
-      // @ts-ignore
+      // @ts-ignore Safari < 14
       mql.addListener(handler);
     }
     return () => {
       if (mql.removeEventListener) {
         mql.removeEventListener("change", handler);
       } else {
-        // @ts-ignore
+        // @ts-ignore Safari < 14
         mql.removeListener(handler);
       }
     };
@@ -109,22 +99,15 @@ function Book() {
   const pageWidth = Math.max(240, calcWidth);
   const pageHeight = Math.max(320, calcHeight);
 
-  // Initial loading spinner – hide shortly after mount
   React.useEffect(() => {
     const t = setTimeout(() => setLoading(false), 350);
     return () => clearTimeout(t);
   }, []);
-  // recipeData is imported from ../data/recipes
 
-  // Build Contents items from recipeData (image page is before each recipe page)
   const contentsItems: ContentsItem[] = recipeData.map((r, index) => ({
     title: r.title,
     page: index * 2 + 4,
   }));
-
-  // Single-page Contents (scrolls within page)
-
-  // (Navigation to specific pages removed as requested)
 
   const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
   const goToContents = React.useCallback(() => {
@@ -135,7 +118,6 @@ function Book() {
     }
   }, [isLocked]);
 
-  // After closing the editor, perform pending navigation to Contents
   React.useEffect(() => {
     if (!addingRecipe && pendingNav === "contents") {
       let cancelled = false;
@@ -143,19 +125,15 @@ function Book() {
         if (cancelled) return;
         const api = bookRef.current?.pageFlip?.();
         if (api && typeof api.flip === "function") {
-          // Temporarily allow the programmatic flip even if locked
           allowProgrammaticFlipRef.current = true;
           api.flip(CONTENTS_PAGE_INDEX);
-          // Reset the allow flag shortly after flip completes
           setTimeout(() => {
             allowProgrammaticFlipRef.current = false;
           }, 300);
           setPendingNav(null);
         } else if (attempt < 10) {
-          // Retry a few times until the flipbook API is ready
           setTimeout(() => tryFlip(attempt + 1), 50);
         } else {
-          // Give up and clear the pending nav to avoid loops
           setPendingNav(null);
         }
       };
@@ -166,7 +144,7 @@ function Book() {
     }
   }, [addingRecipe, pendingNav]);
 
-  const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index (skip image)
+  const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index
   const goToRecipe = React.useCallback(
     (recipeIndex: number) => {
       if (isLocked) return; // prevent navigation while locked
@@ -179,13 +157,10 @@ function Book() {
     [RECIPE_FIRST_PAGE_INDEX, isLocked]
   );
 
-  // Transition helpers to show spinner when entering/exiting Add Recipe
   const openAddRecipe = React.useCallback(() => {
     setLoading(true);
-    // Small delay to display spinner during transition
     setTimeout(() => {
       setAddingRecipe(true);
-      // Allow editor to mount, then fade spinner
       setTimeout(() => setLoading(false), 300);
     }, 150);
   }, []);
@@ -201,7 +176,6 @@ function Book() {
     }, 150);
   }, []);
 
-  // Render Add/Edit Recipe Editor as a dedicated two-page spread with flipping disabled
   if (addingRecipe || editingRecipe) {
     return (
       <>
