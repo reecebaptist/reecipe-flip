@@ -16,6 +16,14 @@ function Book() {
   const [vh, setVh] = React.useState<number>(window.innerHeight);
   // Add Recipe editor mode state
   const [addingRecipe, setAddingRecipe] = React.useState<boolean>(false);
+  const [editingRecipe, setEditingRecipe] = React.useState<null | {
+    title: string;
+    prepTime: string;
+    cookTime: string;
+    ingredients: string[];
+    instructions: string;
+    image?: string;
+  }>(null);
   // Loading overlay state
   const [loading, setLoading] = React.useState<boolean>(true);
   // Flip lock state
@@ -193,21 +201,37 @@ function Book() {
     }, 150);
   }, []);
 
-  // Render Add Recipe Editor as a dedicated two-page spread with flipping disabled
-  if (addingRecipe) {
+  // Render Add/Edit Recipe Editor as a dedicated two-page spread with flipping disabled
+  if (addingRecipe || editingRecipe) {
     return (
       <>
         <AddRecipeEditor
           width={pageWidth}
           height={pageHeight}
           isPortrait={isPortrait}
-          onCancel={closeAddRecipe}
+          onCancel={() => {
+            setEditingRecipe(null);
+            closeAddRecipe();
+          }}
           onSave={(data) => {
             // Placeholder for future integration
             console.log("Saved draft:", data);
             // Close editor and flip to Contents
             closeAddRecipe(true);
           }}
+          mode={editingRecipe ? "edit" : "add"}
+          initialRecipe={
+            editingRecipe
+              ? {
+                  title: editingRecipe.title,
+                  prepTime: editingRecipe.prepTime,
+                  cookTime: editingRecipe.cookTime,
+                  ingredients: editingRecipe.ingredients,
+                  instructions: editingRecipe.instructions,
+                  imageUrl: editingRecipe.image,
+                }
+              : undefined
+          }
         />
         {loading && (
           <div className="loading-overlay" aria-live="polite" aria-busy="true">
@@ -318,6 +342,22 @@ function Book() {
                 instructions={recipe.instructions}
                 pageNumber={index * 2 + 4}
                 onGoToContents={goToContents}
+                onEditRecipe={() => {
+                  if (isLocked) return;
+                  setLoading(true);
+                  setTimeout(() => {
+                    setEditingRecipe({
+                      title: recipe.title,
+                      prepTime: recipe.prepTime,
+                      cookTime: recipe.cookTime,
+                      ingredients: recipe.ingredients,
+                      instructions: recipe.instructions,
+                      image: recipe.image,
+                    });
+                    setAddingRecipe(true);
+                    setTimeout(() => setLoading(false), 300);
+                  }, 150);
+                }}
                 isLocked={isLocked}
                 onToggleLock={() => setIsLocked((v) => !v)}
               />

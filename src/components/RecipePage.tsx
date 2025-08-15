@@ -11,6 +11,7 @@ type RecipePageProps = {
   onGoToContents?: () => void;
   isLocked?: boolean;
   onToggleLock?: () => void;
+  onEditRecipe?: () => void;
 };
 
 function RecipePage({
@@ -23,6 +24,7 @@ function RecipePage({
   onGoToContents,
   isLocked,
   onToggleLock,
+  onEditRecipe,
 }: RecipePageProps) {
   const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
@@ -33,7 +35,7 @@ function RecipePage({
         <div className="recipe-title-container">
           <h2 className="recipe-title">{title}</h2>
         </div>
-        {(onGoToContents || onToggleLock) && (
+        {(onGoToContents || onEditRecipe || onToggleLock) && (
           <div className="recipe-actions-row">
             {onGoToContents && (
               <button
@@ -58,6 +60,31 @@ function RecipePage({
                   menu_book
                 </span>
                 <span>Go to contents</span>
+              </button>
+            )}
+            {onEditRecipe && (
+              <button
+                type="button"
+                className="go-contents-button"
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                disabled={!!isLocked}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isLocked) {
+                    onEditRecipe();
+                  }
+                }}
+                aria-label="Edit recipe"
+                title="Edit recipe"
+                aria-disabled={!!isLocked}
+              >
+                <span className="material-symbols-outlined" aria-hidden>
+                  edit
+                </span>
+                <span>Edit</span>
               </button>
             )}
             {onToggleLock && (

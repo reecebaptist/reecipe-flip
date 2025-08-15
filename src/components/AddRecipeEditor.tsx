@@ -14,6 +14,15 @@ type AddRecipeEditorProps = {
     instructions: string;
     imageUrl?: string;
   }) => void;
+  mode?: "add" | "edit";
+  initialRecipe?: {
+    title: string;
+    prepTime: string;
+    cookTime: string;
+    ingredients: string[];
+    instructions: string;
+    imageUrl?: string;
+  };
 };
 
 const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
@@ -22,15 +31,29 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
   isPortrait,
   onCancel,
   onSave,
+  mode = "add",
+  initialRecipe,
 }) => {
   const editorRef = React.useRef<any>(null);
-  const [draftImageUrl, setDraftImageUrl] = React.useState<string>("");
+  const [draftImageUrl, setDraftImageUrl] = React.useState<string>(
+    initialRecipe?.imageUrl || ""
+  );
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [draftTitle, setDraftTitle] = React.useState<string>("");
-  const [draftPrep, setDraftPrep] = React.useState<string>("");
-  const [draftCook, setDraftCook] = React.useState<string>("");
-  const [draftIngredients, setDraftIngredients] = React.useState<string>("");
-  const [draftInstructions, setDraftInstructions] = React.useState<string>("");
+  const [draftTitle, setDraftTitle] = React.useState<string>(
+    initialRecipe?.title || ""
+  );
+  const [draftPrep, setDraftPrep] = React.useState<string>(
+    initialRecipe?.prepTime || ""
+  );
+  const [draftCook, setDraftCook] = React.useState<string>(
+    initialRecipe?.cookTime || ""
+  );
+  const [draftIngredients, setDraftIngredients] = React.useState<string>(
+    initialRecipe?.ingredients?.join("\n") || ""
+  );
+  const [draftInstructions, setDraftInstructions] = React.useState<string>(
+    initialRecipe?.instructions || ""
+  );
 
   // Cleanup object URLs
   React.useEffect(() => {
@@ -180,7 +203,7 @@ const AddRecipeEditor: React.FC<AddRecipeEditorProps> = ({
             className="recipe-container editor-recipe-container"
           >
             <div className="recipe-title-container">
-              <h2 className="recipe-title">Add a new recipe</h2>
+                <h2 className="recipe-title">{mode === "edit" ? "Edit recipe" : "Add a new recipe"}</h2>
               
             </div>
 
