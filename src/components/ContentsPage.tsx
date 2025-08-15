@@ -79,6 +79,24 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
               <h2 className="recipe-title">Contents</h2>
             </div>
             <div className="contents-search-row">
+              {onAddRecipe && (
+                <button
+                  type="button"
+                  className="contents-add-button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onAddRecipe?.();
+                  }}
+                  aria-label="Add recipe"
+                  title="Add recipe"
+                >
+                  <span className="material-symbols-outlined" aria-hidden>
+                    add
+                  </span>
+                  <span>Add recipe</span>
+                </button>
+              )}
               <button
                 type="button"
                 className="icon-button contents-link"
@@ -129,43 +147,25 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                 </div>
               )}
             </div>
-            <div className={listClass}>
-              {displayedItems.map((item, idx) => (
-                <div
-                  className="contents-item"
-                  key={`${item.title}-${item.page}`}
-                  onClick={
-                    onSelect ? () => onSelect(startIndex + idx) : undefined
-                  }
-                  role={onSelect ? "button" : undefined}
-                  tabIndex={onSelect ? 0 : undefined}
-                >
-                  <span className="title">{item.title}</span>
-                  <span className="dots"></span>
-                  <span className="page">{item.page}</span>
-                </div>
-              ))}
-            </div>
-            {isLastPage && onAddRecipe && (
-              <div className="contents-actions">
-                <button
-                  type="button"
-                  className="contents-add-button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onAddRecipe?.();
-                  }}
-                  aria-label="Add recipe"
-                  title="Add recipe"
-                >
-                  <span className="material-symbols-outlined" aria-hidden>
-                    add
-                  </span>
-                  <span>Add recipe</span>
-                </button>
+            <div className="contents-scroll">
+              <div className={listClass}>
+                {displayedItems.map((item, idx) => (
+                  <div
+                    className="contents-item"
+                    key={`${item.title}-${item.page}`}
+                    onClick={
+                      onSelect ? () => onSelect(startIndex + idx) : undefined
+                    }
+                    role={onSelect ? "button" : undefined}
+                    tabIndex={onSelect ? 0 : undefined}
+                  >
+                    <span className="title">{item.title}</span>
+                    <span className="dots"></span>
+                    <span className="page">{item.page}</span>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
           </>
         )}
         {roman && <div className="page-number">{roman}</div>}

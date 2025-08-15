@@ -680,26 +680,7 @@ function Book() {
     page: index * 2 + 4,
   }));
 
-  // Split contents items into multiple pages based on available height.
-  // Estimate how many items fit per page using measured page height and a nominal row height.
-  const TITLE_BLOCK = 64; // px reserved for title spacing within recipe-container
-  const TOP_BOTTOM_PADDING = 40; // padding from .recipe-container
-  const FOOTER_SPACE = 24; // page number area
-  const AVAILABLE =
-    pageHeight - TITLE_BLOCK - TOP_BOTTOM_PADDING - FOOTER_SPACE;
-  const ROW_HEIGHT = 28; // approx height per contents row (responsive text)
-  const minPerPage = 6;
-  const estPerPage = Math.max(minPerPage, Math.floor(AVAILABLE / ROW_HEIGHT));
-
-  const pagedContents: ContentsItem[][] = [];
-  for (let i = 0; i < contentsItems.length; i += estPerPage) {
-    pagedContents.push(contentsItems.slice(i, i + estPerPage));
-  }
-
-  // Ensure an even number of Contents pages only in landscape (two-page spreads)
-  if (!isPortrait && pagedContents.length % 2 === 1) {
-    pagedContents.push([]);
-  }
+  // Single-page Contents (scrolls within page)
 
   // (Navigation to specific pages removed as requested)
 
@@ -750,7 +731,10 @@ function Book() {
         <CoverPage />
       </div>
 
-      {/* Author page after cover */}
+  {/* Empty page before Author */}
+  <div className="page" style={{ background: "#ffffff" }} />
+
+  {/* Author page after empty */}
       <div className="page" style={{ background: "#ffffff" }}>
         <AuthorPage />
       </div>
@@ -760,25 +744,19 @@ function Book() {
         <ForewordPage />
       </div>
 
-      {/* Contents pages (auto-split) */}
-      {pagedContents.map((items, idx) => {
-        const startIndex = idx * estPerPage;
-        const isLast = idx === pagedContents.length - 1;
-        return (
-          <div className="page" key={`contents-${idx}`}>
-            <ContentsPage
-              items={items}
-              startIndex={startIndex}
-              romanIndex={idx + 1}
-              isLastPage={isLast}
-              onAddRecipe={() => {
-                setAddingRecipe(true);
-              }}
-              // onSelect removed per request
-            />
-          </div>
-        );
-      })}
+      {/* Contents page (single, scrollable) */}
+      <div className="page" key={`contents-single`}>
+        <ContentsPage
+          items={contentsItems}
+          startIndex={0}
+          romanIndex={1}
+          isLastPage={true}
+          onAddRecipe={() => {
+            setAddingRecipe(true);
+          }}
+          // onSelect removed per request
+        />
+      </div>
 
       {recipeData.flatMap((recipe, index) => [
         <div className="page" key={`${recipe.id}-img`}>
