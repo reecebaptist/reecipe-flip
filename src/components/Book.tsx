@@ -7,7 +7,7 @@ import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
 import BackCoverPage from "./BackCoverPage";
 import AddRecipeEditor from "./AddRecipeEditor";
-import { recipeData } from "../data/recipes";
+import { fetchPublishedRecipes, UIRecipe } from "../lib/recipes";
 
 type BookProps = {
   onLogout?: () => void;
@@ -32,6 +32,25 @@ function Book({ onLogout }: BookProps) {
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const revertingRef = React.useRef<boolean>(false);
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
+  const [recipes, setRecipes] = React.useState<UIRecipe[]>([]);
+
+  // Load recipes from Supabase
+  React.useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const items = await fetchPublishedRecipes();
+        if (mounted) setRecipes(items);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching recipes", e);
+        if (mounted) setRecipes([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Stop interactions when locked except on elements explicitly allowed
   const stopLockedInteractions = React.useCallback(
@@ -103,15 +122,16 @@ function Book({ onLogout }: BookProps) {
   const pageWidth = Math.max(240, calcWidth);
   const pageHeight = Math.max(320, calcHeight);
 
-  React.useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(t);
-  }, []);
+  // Remount flipbook when orientation or page count changes to avoid DOM reconciliation conflicts
+  const flipbookKey = React.useMemo(
+    () => `flip-${isPortrait ? "p" : "l"}-${recipes.length}`,
+    [isPortrait, recipes.length]
+  );
 
-  const contentsItems: ContentsItem[] = recipeData.map((r, index) => ({
-    title: r.title,
-    page: index * 2 + 4,
-  }));
+  const isSupabaseConfigured = Boolean(
+    process.env.REACT_APP_SUPABASE_URL &&
+      process.env.REACT_APP_SUPABASE_ANON_KEY
+  );
 
   const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
   const goToContents = React.useCallback(() => {
@@ -121,6 +141,110 @@ function Book({ onLogout }: BookProps) {
       api.flip(CONTENTS_PAGE_INDEX);
     }
   }, [isLocked]);
+
+  const openAddRecipe = React.useCallback(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setAddingRecipe(true);
+      setTimeout(() => setLoading(false), 300);
+    }, 150);
+  }, []);
+
+  // Build dynamic recipe pages to ensure only React elements are passed as children (no null/false)
+  const recipePages = React.useMemo(() => {
+    if (recipes.length === 0) {
+      return [
+        <div className="page" key="no-recipes">
+          <div className="page-content no-padding">
+            <div className="recipe-container" style={{ padding: 16 }}>
+              <div className="recipe-title-container">
+                <h2 className="recipe-title">No recipes available</h2>
+              </div>
+              <div className="editor-form-scroll" style={{ paddingTop: 8 }}>
+                {!isSupabaseConfigured ? (
+                  <p style={{ margin: 0, opacity: 0.85 }}>
+                    Supabase is not configured. Set REACT_APP_SUPABASE_URL and
+                    REACT_APP_SUPABASE_ANON_KEY, then reload.
+                  </p>
+                ) : (
+                  <p style={{ margin: 0, opacity: 0.85 }}>
+                    No published recipes were found. Use “Add recipe” to create
+                    your first one.
+                  </p>
+                )}
+                <div style={{ marginTop: 12 }}>
+                  <button
+                    type="button"
+                    className="contents-add-button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openAddRecipe();
+                    }}
+                    aria-label="Add recipe"
+                    title="Add recipe"
+                  >
+                    <span className="material-symbols-outlined" aria-hidden>
+                      add
+                    </span>
+                    <span>Add recipe</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>,
+      ];
+    }
+    return recipes.flatMap((recipe, index) => [
+      <div className="page" key={`${recipe.id}-img`}>
+        <div
+          className="recipe-image-full"
+          style={{ backgroundImage: `url(${recipe.imageUrl})` }}
+        />
+      </div>,
+      <div className="page" key={recipe.id}>
+        <RecipePage
+          title={recipe.title}
+          prepTime={recipe.prepTime}
+          cookTime={recipe.cookTime}
+          ingredients={recipe.ingredients}
+          instructions={recipe.instructions}
+          pageNumber={index * 2 + 4}
+          onGoToContents={goToContents}
+          onEditRecipe={() => {
+            if (isLocked) return;
+            setLoading(true);
+            setTimeout(() => {
+              setEditingRecipe({
+                title: recipe.title,
+                prepTime: recipe.prepTime,
+                cookTime: recipe.cookTime,
+                ingredients: recipe.ingredients,
+                instructions: recipe.instructions,
+                image: recipe.imageUrl,
+              });
+              setAddingRecipe(true);
+              setTimeout(() => setLoading(false), 300);
+            }, 150);
+          }}
+          isLocked={isLocked}
+          onToggleLock={() => setIsLocked((v) => !v)}
+        />
+      </div>,
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipes, isSupabaseConfigured, isLocked]);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(t);
+  }, []);
+
+  const contentsItems: ContentsItem[] = recipes.map((r, index) => ({
+    title: r.title,
+    page: index * 2 + 4,
+  }));
 
   React.useEffect(() => {
     if (!addingRecipe && pendingNav === "contents") {
@@ -160,14 +284,6 @@ function Book({ onLogout }: BookProps) {
     },
     [RECIPE_FIRST_PAGE_INDEX, isLocked]
   );
-
-  const openAddRecipe = React.useCallback(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setAddingRecipe(true);
-      setTimeout(() => setLoading(false), 300);
-    }, 150);
-  }, []);
 
   const closeAddRecipe = React.useCallback((navigateToContents?: boolean) => {
     setLoading(true);
@@ -236,6 +352,7 @@ function Book({ onLogout }: BookProps) {
         onClickCapture={stopLockedInteractions}
       >
         <HTMLFlipBook
+          key={flipbookKey}
           ref={bookRef}
           width={pageWidth}
           height={pageHeight}
@@ -315,43 +432,7 @@ function Book({ onLogout }: BookProps) {
             />
           </div>
 
-          {recipeData.flatMap((recipe, index) => [
-            <div className="page" key={`${recipe.id}-img`}>
-              <div
-                className="recipe-image-full"
-                style={{ backgroundImage: `url(${recipe.image})` }}
-              />
-            </div>,
-            <div className="page" key={recipe.id}>
-              <RecipePage
-                title={recipe.title}
-                prepTime={recipe.prepTime}
-                cookTime={recipe.cookTime}
-                ingredients={recipe.ingredients}
-                instructions={recipe.instructions}
-                pageNumber={index * 2 + 4}
-                onGoToContents={goToContents}
-                onEditRecipe={() => {
-                  if (isLocked) return;
-                  setLoading(true);
-                  setTimeout(() => {
-                    setEditingRecipe({
-                      title: recipe.title,
-                      prepTime: recipe.prepTime,
-                      cookTime: recipe.cookTime,
-                      ingredients: recipe.ingredients,
-                      instructions: recipe.instructions,
-                      image: recipe.image,
-                    });
-                    setAddingRecipe(true);
-                    setTimeout(() => setLoading(false), 300);
-                  }, 150);
-                }}
-                isLocked={isLocked}
-                onToggleLock={() => setIsLocked((v) => !v)}
-              />
-            </div>,
-          ])}
+          {recipePages}
 
           {/* Back cover */}
           <div className="page" style={{ background: "#ffffff" }}>
@@ -369,7 +450,9 @@ function Book({ onLogout }: BookProps) {
           }}
           title="Logout"
         >
-          <span className="material-symbols-outlined" aria-hidden="true">logout</span>
+          <span className="material-symbols-outlined" aria-hidden="true">
+            logout
+          </span>
         </button>
       </div>
       {loading && (
