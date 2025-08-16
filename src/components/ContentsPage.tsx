@@ -59,6 +59,8 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   const listClass = `contents-list${isLastPage ? " is-last" : ""}`;
   const [showSearch, setShowSearch] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const [showFilter, setShowFilter] = React.useState(false);
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const searchInputRef = React.useRef<HTMLInputElement | null>(null);
   const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
     e.stopPropagation();
@@ -72,10 +74,30 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
     }
   }, [showSearch]);
 
+  const allTags = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const it of items) {
+      const tgs = Array.isArray(it.tags) ? it.tags : [];
+      for (const t of tgs) {
+        if (t && t.trim()) s.add(t);
+      }
+    }
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [items]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.some((x) => x.toLowerCase() === tag.toLowerCase())
+        ? prev.filter((x) => x.toLowerCase() !== tag.toLowerCase())
+        : [...prev, tag]
+    );
+  };
+
   const displayedItems = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((it) => {
+    let list = !q
+      ? items
+      : items.filter((it) => {
       const inTitle = it.title.toLowerCase().includes(q);
       const ing = Array.isArray(it.ingredients) ? it.ingredients : [];
       const inIngs = ing.some((s) => (s || "").toLowerCase().includes(q));
@@ -83,8 +105,17 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
   const inTags = tgs.some((t) => (t || "").toLowerCase().includes(q));
   return inTitle || inIngs || inTags;
     });
-  }, [items, query]);
+    if (selectedTags.length > 0) {
+      const sel = selectedTags.map((t) => t.toLowerCase());
+      list = list.filter((it) => {
+        const tgs = Array.isArray(it.tags) ? it.tags : [];
+        return tgs.some((t) => (t || "").toLowerCase() && sel.includes((t || "").toLowerCase()));
+      });
+    }
+    return list;
+  }, [items, query, selectedTags]);
   return (
+    <>
     <div className="page-content contents-page">
       {onLogout && (
         <button
@@ -147,6 +178,18 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                 <span className="material-symbols-outlined">
                   {showSearch ? "close" : "search"}
                 </span>
+              </button>
+              <button
+                type="button"
+                className="icon-button contents-link"
+                onClick={() => setShowFilter((v) => !v)}
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                aria-label={showFilter ? "Close filters" : "Filter"}
+                title={showFilter ? "Close filters" : "Filter"}
+              >
+                <span className="material-symbols-outlined">filter_list</span>
               </button>
               {showSearch && (
                 <div className="contents-search-input-wrapper">
@@ -217,7 +260,105 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
         )}
         {roman && <div className="page-number">{roman}</div>}
       </div>
-    </div>
+  </div>
+  {showFilter && (
+      <div
+        className="modal-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filter-modal-title"
+        onClick={() => setShowFilter(false)}
+        onPointerDownCapture={stopFlipCapture}
+        onTouchStartCapture={stopFlipCapture}
+        onMouseDownCapture={stopFlipCapture}
+        onKeyDown={(e) => {
+          if ((e as React.KeyboardEvent).key === "Escape") setShowFilter(false);
+        }}
+      >
+        <div
+          className="modal-card"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDownCapture={stopFlipCapture}
+          onTouchStartCapture={stopFlipCapture}
+          onMouseDownCapture={stopFlipCapture}
+          tabIndex={-1}
+        >
+          <div className="modal-header">
+            <h3 id="filter-modal-title" className="modal-title">Filter by tags</h3>
+          </div>
+          <div className="modal-body">
+            {allTags.length === 0 ? (
+              <p style={{ margin: 0, opacity: 0.85 }}>No tags available.</p>
+            ) : (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {allTags.map((t) => {
+                  const isSelected = selectedTags.some(
+                    (x) => x.toLowerCase() === t.toLowerCase()
+                  );
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      className="contents-add-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleTag(t);
+                      }}
+                      aria-pressed={isSelected}
+                      title={`${isSelected ? "Remove" : "Add"} ${t}`}
+                      aria-label={`${isSelected ? "Remove" : "Add"} ${t}`}
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: "#000",
+                              color: "#fff",
+                              borderColor: "#000",
+                            }
+                          : undefined
+                      }
+                    >
+                      <span className="material-symbols-outlined" aria-hidden>
+                        sell
+                      </span>
+                      <span>{t}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="modal-actions">
+            {selectedTags.length > 0 && (
+              <button
+                type="button"
+                className="icon-button contents-link is-cancel"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedTags([]);
+                }}
+                aria-label="Clear filters"
+                title="Clear filters"
+              >
+                <span className="material-symbols-outlined" aria-hidden>backspace</span>
+                <span className="btn-label">Clear</span>
+              </button>
+            )}
+            <button
+              type="button"
+              className="icon-button contents-link"
+              onClick={() => setShowFilter(false)}
+              autoFocus
+            >
+              <span className="material-symbols-outlined" aria-hidden>check</span>
+              <span className="btn-label">Done</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
