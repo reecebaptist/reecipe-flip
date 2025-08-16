@@ -179,18 +179,6 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                   {showSearch ? "close" : "search"}
                 </span>
               </button>
-              <button
-                type="button"
-                className="icon-button contents-link"
-                onClick={() => setShowFilter((v) => !v)}
-                onPointerDownCapture={stopFlipCapture}
-                onTouchStartCapture={stopFlipCapture}
-                onMouseDownCapture={stopFlipCapture}
-                aria-label={showFilter ? "Close filters" : "Filter"}
-                title={showFilter ? "Close filters" : "Filter"}
-              >
-                <span className="material-symbols-outlined">filter_list</span>
-              </button>
               {showSearch && (
                 <div className="contents-search-input-wrapper">
                   <input
@@ -224,6 +212,18 @@ const ContentsPage: React.FC<ContentsPageProps> = ({
                   )}
                 </div>
               )}
+              <button
+                type="button"
+                className="icon-button contents-link"
+                onClick={() => setShowFilter((v) => !v)}
+                onPointerDownCapture={stopFlipCapture}
+                onTouchStartCapture={stopFlipCapture}
+                onMouseDownCapture={stopFlipCapture}
+                aria-label={showFilter ? "Close filters" : "Filter"}
+                title={showFilter ? "Close filters" : "Filter"}
+              >
+                <span className="material-symbols-outlined">filter_list</span>
+              </button>
             </div>
             <div
               className="contents-scroll"
