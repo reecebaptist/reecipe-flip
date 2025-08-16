@@ -7,6 +7,8 @@ import ForewordPage from "./ForewordPage";
 import ContentsPage, { ContentsItem } from "./ContentsPage";
 import BackCoverPage from "./BackCoverPage";
 import AddRecipeEditor from "./AddRecipeEditor";
+import RecipeImagePage from "./RecipeImagePage";
+import placeholderImg from "../assets/images/cover-bg.jpg";
 import {
   fetchPublishedRecipes,
   UIRecipe,
@@ -251,10 +253,7 @@ function Book({ onLogout }: BookProps) {
     }
     return recipes.flatMap((recipe, index) => [
       <div className="page" key={`${recipe.id}-img`}>
-        <div
-          className="recipe-image-full"
-          style={{ backgroundImage: `url(${recipe.imageUrl})` }}
-        />
+        <RecipeImagePage src={recipe.imageUrl} placeholder={placeholderImg} />
       </div>,
       <div className="page" key={recipe.id}>
         <RecipePage
