@@ -38,12 +38,14 @@ function Book({ onLogout }: BookProps) {
   }>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [isLocked, setIsLocked] = React.useState<boolean>(false);
-  const [pendingNav, setPendingNav] = React.useState<null | "contents">(null);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const revertingRef = React.useRef<boolean>(false);
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
   const [recipes, setRecipes] = React.useState<UIRecipe[]>([]);
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+  const [desiredStartPage, setDesiredStartPage] = React.useState<number | null>(
+    null
+  );
 
   // Fixed contents page index for programmatic navigation
   const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
@@ -115,38 +117,7 @@ function Book({ onLogout }: BookProps) {
     return () => clearTimeout(t);
   }, []);
 
-  // After closing the editor, flip back to the Contents page (if requested)
-  // React.useEffect(() => {
-  //   if (!addingRecipe && pendingNav === "contents") {
-  //     let cancelled = false;
-  //     const tryFlip = (attempt: number) => {
-  //       if (cancelled) return;
-  //       const api = bookRef.current?.pageFlip?.();
-  //       console.log(api)
-  //       if (api && typeof api.flip === "function") {
-  //         allowProgrammaticFlipRef.current = true;
-  //         api.flip(CONTENTS_PAGE_INDEX);
-  //         setTimeout(() => {
-  //           allowProgrammaticFlipRef.current = false;
-  //         }, 300);
-  //         console.log("Good");
-  //         console.log("Attempt #" + attempt);
-  //         setPendingNav(null);
-  //       } else if (attempt < 10) {
-  //         console.log("Bad");
-  //         console.log("Attempt #" + attempt);
-  //         setTimeout(() => tryFlip(attempt + 1), 50);
-  //       } else {
-  //         console.log("Worse");
-  //         setPendingNav(null);
-  //       }
-  //     };
-  //     tryFlip(0);
-  //     return () => {
-  //       cancelled = true;
-  //     };
-  //   }
-  // }, [addingRecipe, pendingNav]);
+  // Note: desiredStartPage is cleared in onFlip after we land on it
 
   // Stop interactions when locked except on elements explicitly allowed
   const stopLockedInteractions = React.useCallback(
@@ -190,8 +161,8 @@ function Book({ onLogout }: BookProps) {
 
   // Remount flipbook when orientation or page count changes to avoid DOM reconciliation conflicts
   const flipbookKey = React.useMemo(
-    () => `flip-${isPortrait ? "p" : "l"}-${recipes.length}`,
-    [isPortrait, recipes.length]
+  () => `flip-${isPortrait ? "p" : "l"}-${recipes.length}`,
+  [isPortrait, recipes.length]
   );
 
   const isSupabaseConfigured = Boolean(
@@ -330,13 +301,14 @@ function Book({ onLogout }: BookProps) {
 
   const closeAddRecipe = React.useCallback((navigateToContents?: boolean) => {
     setLoading(true);
-    setTimeout(() => {
-      setAddingRecipe(false);
-      if (navigateToContents) {
-        setPendingNav("contents");
-      }
-      setTimeout(() => setLoading(false), 300);
-    }, 150);
+    // First close the editor
+    setAddingRecipe(false);
+    // After the editor unmounts in the next tick, set desired page
+    if (navigateToContents) {
+      setTimeout(() => setDesiredStartPage(CONTENTS_PAGE_INDEX), 0);
+    }
+    // Finish loading indicator shortly after
+    setTimeout(() => setLoading(false), 300);
   }, []);
 
   if (addingRecipe || editingRecipe) {
@@ -458,7 +430,7 @@ function Book({ onLogout }: BookProps) {
           size="fixed"
           className={""}
           style={{}}
-          startPage={0}
+          startPage={desiredStartPage ?? 0}
           minWidth={pageWidth}
           maxWidth={pageWidth}
           minHeight={pageHeight}
@@ -476,6 +448,10 @@ function Book({ onLogout }: BookProps) {
           onFlip={(e: any) => {
             const newPage = typeof e?.data === "number" ? e.data : undefined;
             if (typeof newPage !== "number") return;
+            // If we requested a specific start page, clear it once we've landed there
+            if (desiredStartPage != null && newPage === desiredStartPage) {
+              setDesiredStartPage(null);
+            }
             if (
               isLocked &&
               !revertingRef.current &&
