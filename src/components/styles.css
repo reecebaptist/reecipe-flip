@@ -173,7 +173,7 @@
   border-radius: 999px; /* smooth rounded corners */
   background: #000000; /* black background */
   color: #ffffff; /* white text */
-  font-size: 0.8rem;
+  font-size: 0.75rem; /* slightly smaller non-title text */
   line-height: 1;
 }
 .recipe-tag-pill .material-symbols-outlined {
@@ -338,13 +338,14 @@
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.9em;
+  font-size: 0.85em; /* reduce non-title size */
   color: #888;
   flex-shrink: 0;
 }
 
 .recipe-instructions {
   text-align: justify;
+  font-size: 0.94rem; /* reduce non-title body text */
 }
 
 /* AddRecipeEditor (editor) */
@@ -452,6 +453,7 @@
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 0.95rem; /* slightly smaller */
 }
 .editor-textarea {
   resize: none;
@@ -512,7 +514,7 @@
 
 /* Label next to icons in action buttons */
 .editor-actions .btn-label {
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* reduce non-title label text */
   line-height: 1;
 }
 
@@ -524,7 +526,7 @@
   text-align: left;
   color: #1b2733;
   line-height: 1.6;
-  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  font-size: clamp(0.85rem, 2vw, 0.95rem); /* reduce non-title body text */
 }
 .foreword-title {
   font-weight: 800;
@@ -562,6 +564,7 @@
   background: #ffffff;
   color: #1f2937;
   cursor: pointer;
+  font-size: 0.9rem; /* smaller button text */
 }
 .contents-add-button:hover {
   background: #ffffff;
@@ -593,6 +596,7 @@
   background: #ffffff;
   color: #1f2937;
   outline: none;
+  font-size: 0.95rem; /* reduce non-title input text */
 }
 .contents-search-input.with-clear {
   padding-right: 32px; /* room for clear button */
@@ -634,7 +638,7 @@
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 12px;
-  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  font-size: clamp(0.85rem, 2vw, 0.95rem); /* smaller non-title list text */
   cursor: default;
 }
 .contents-item[role="button"] {
