@@ -21,12 +21,12 @@
   gap: 8px;
 }
 .author-page .byline {
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 2vw, 0.75rem);
   color: #1f2937;
 }
 .author-page .author-name {
   font-family: inherit; /* match the By line font */
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 2vw, 0.75rem);
   line-height: 1.1;
   color: #111827;
 }
@@ -173,11 +173,11 @@
   border-radius: 999px; /* smooth rounded corners */
   background: #000000; /* black background */
   color: #ffffff; /* white text */
-  font-size: 0.75rem; /* slightly smaller non-title text */
+  font-size: 0.7rem; /* slightly smaller non-title text */
   line-height: 1;
 }
 .recipe-tag-pill .material-symbols-outlined {
-  font-size: 18px; /* smaller icon */
+  font-size: 10px; /* smaller icon */
   line-height: 1;
 }
 
@@ -200,6 +200,7 @@
   background: #ffffff;
   color: #1f2937;
   cursor: pointer;
+  font-size: clamp(0.75rem, 2vw, 0.75rem);
 }
 .go-contents-button:hover {
   background: #ffffff;
@@ -210,7 +211,7 @@
   cursor: not-allowed;
 }
 .go-contents-button .material-symbols-outlined {
-  font-size: 18px;
+  font-size: 12px;
 }
 
 .icon-button.contents-link {
@@ -234,7 +235,7 @@
   background: transparent;
 }
 .icon-button.contents-link .material-symbols-outlined {
-  font-size: 20px;
+  font-size: 15px;
 }
 
 /* Book-level wrapper */
@@ -287,10 +288,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.8em;
+}
+
+.time-title .material-symbols-outlined {
+  font-size: 20px; /* slightly smaller icon */
+  color: #1f2937; /* dark neutral to match typography */
 }
 
 .time-block .time-value {
   padding-left: 32px; /* Align with text, accounting for icon + gap */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* reduce non-title time text */
 }
 
 .time-block strong {
@@ -311,8 +319,13 @@
   gap: 8px;
 }
 
+.detail-header .material-symbols-outlined {
+  font-size: 20px; /* slightly smaller icon */
+  color: #1f2937; /* dark neutral to match typography */
+}
+
 .recipe-details h3 {
-  font-size: 1.2em;
+  font-size: 0.9em;
   margin-top: 15px;
   margin-bottom: 5px;
   font-weight: bold;
@@ -325,6 +338,7 @@
 }
 
 .recipe-ingredients li {
+  font-size: clamp(0.75rem, 2vw, 0.75rem);;
   margin-bottom: 8px;
 }
 
@@ -338,14 +352,14 @@
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.85em; /* reduce non-title size */
+  font-size: 0.7em; /* reduce non-title size */
   color: #888;
   flex-shrink: 0;
 }
 
 .recipe-instructions {
   text-align: justify;
-  font-size: 0.94rem; /* reduce non-title body text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* reduce non-title body text */
 }
 
 /* AddRecipeEditor (editor) */
@@ -442,6 +456,7 @@
   display: block;
   font-weight: 600;
   margin-bottom: 4px;
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* slightly smaller */
 }
 .required-star {
   color: #ef4444;
@@ -453,7 +468,7 @@
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-size: 0.95rem; /* slightly smaller */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* slightly smaller */
 }
 .editor-textarea {
   resize: none;
@@ -514,7 +529,7 @@
 
 /* Label next to icons in action buttons */
 .editor-actions .btn-label {
-  font-size: 0.85rem; /* reduce non-title label text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* reduce non-title label text */
   line-height: 1;
 }
 
@@ -526,7 +541,7 @@
   text-align: left;
   color: #1b2733;
   line-height: 1.6;
-  font-size: clamp(0.85rem, 2vw, 0.95rem); /* reduce non-title body text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem);; /* reduce non-title body text */
 }
 .foreword-title {
   font-weight: 800;
@@ -564,13 +579,13 @@
   background: #ffffff;
   color: #1f2937;
   cursor: pointer;
-  font-size: 0.9rem; /* smaller button text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* smaller button text */
 }
 .contents-add-button:hover {
   background: #ffffff;
 }
 .contents-add-button .material-symbols-outlined {
-  font-size: 18px;
+  font-size: 12px;
 }
 
 /* Contents search */
@@ -596,7 +611,7 @@
   background: #ffffff;
   color: #1f2937;
   outline: none;
-  font-size: 0.95rem; /* reduce non-title input text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* reduce non-title input text */
 }
 .contents-search-input.with-clear {
   padding-right: 32px; /* room for clear button */
@@ -618,7 +633,7 @@
   cursor: pointer;
 }
 .contents-search-clear .material-symbols-outlined {
-  font-size: 16px;
+  font-size: 12px;
 }
 .contents-search-input::placeholder {
   color: #9ca3af;
@@ -638,7 +653,7 @@
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 12px;
-  font-size: clamp(0.85rem, 2vw, 0.95rem); /* smaller non-title list text */
+  font-size: clamp(0.75rem, 2vw, 0.75rem); /* smaller non-title list text */
   cursor: default;
 }
 .contents-item[role="button"] {
@@ -737,12 +752,13 @@
   padding: 16px 20px 0;
 }
 .modal-title {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 800;
   margin: 0;
 }
 .modal-body {
   padding: 12px 20px;
+  font-size: clamp(0.75rem, 2vw, 0.75rem);;
 }
 .modal-body ul {
   margin: 8px 0 0 16px;
@@ -762,6 +778,7 @@
   background: #000000;
   color: #ffffff;
   border-color: #000000;
+  font-size: clamp(0.75rem, 2vw, 0.75rem);;
 }
 .modal-actions .icon-button.contents-link.is-cancel {
   background: #ffffff; /* white background */
@@ -780,6 +797,7 @@
 }
 .modal-actions .icon-button.contents-link .material-symbols-outlined {
   color: currentColor;
+  font-size: 12px;
 }
 .login-card {
   width: min(880px, 96vw);
