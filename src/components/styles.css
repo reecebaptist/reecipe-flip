@@ -252,6 +252,8 @@
   background: #000000;
   color: #ffffff;
   border-color: #000000;
+  touch-action: none; /* prevent swipe gestures initiating flips */
+  user-select: none;
 }
 .icon-button.contents-link.page-logout-btn:hover,
 .icon-button.contents-link.page-logout-btn:active {

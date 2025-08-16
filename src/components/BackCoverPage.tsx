@@ -6,6 +6,9 @@ type BackCoverPageProps = {
 };
 
 const BackCoverPage: React.FC<BackCoverPageProps> = ({ onLogout }) => {
+  const stopFlipCapture = React.useCallback((e: React.SyntheticEvent) => {
+    e.stopPropagation();
+  }, []);
   const year = new Date().getFullYear();
   return (
     <div className="page-content back-cover">
@@ -16,6 +19,14 @@ const BackCoverPage: React.FC<BackCoverPageProps> = ({ onLogout }) => {
           aria-label="Logout"
           title="Logout"
           data-allow-locked="true"
+          onPointerDownCapture={stopFlipCapture}
+          onTouchStartCapture={stopFlipCapture}
+          onMouseDownCapture={stopFlipCapture}
+          onKeyDown={(e) => {
+            if ((e as React.KeyboardEvent).key === "Enter" || (e as React.KeyboardEvent).key === " ") {
+              e.stopPropagation();
+            }
+          }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
