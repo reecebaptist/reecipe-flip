@@ -34,7 +34,7 @@ function Book({ onLogout }: BookProps) {
     ingredients: string[];
     instructions: string;
     image?: string;
-  tags: string[];
+    tags: string[];
   }>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [isLocked, setIsLocked] = React.useState<boolean>(false);
@@ -44,6 +44,9 @@ function Book({ onLogout }: BookProps) {
   const allowProgrammaticFlipRef = React.useRef<boolean>(false);
   const [recipes, setRecipes] = React.useState<UIRecipe[]>([]);
   const [currentUserId, setCurrentUserId] = React.useState<string | null>(null);
+
+  // Fixed contents page index for programmatic navigation
+  const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
 
   const loadRecipes = React.useCallback(async () => {
     try {
@@ -74,23 +77,7 @@ function Book({ onLogout }: BookProps) {
     };
   }, [loadRecipes]);
 
-  // Stop interactions when locked except on elements explicitly allowed
-  const stopLockedInteractions = React.useCallback(
-    (e: React.SyntheticEvent) => {
-      if (!isLocked) return;
-      const el = e.target as HTMLElement | null;
-      const allowed =
-        el && typeof (el as any).closest === "function"
-          ? el.closest('[data-allow-locked="true"]')
-          : null;
-      if (!allowed) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    [isLocked]
-  );
-
+  // Handle viewport resize
   React.useEffect(() => {
     const onResize = () => {
       setVw(window.innerWidth);
@@ -100,6 +87,7 @@ function Book({ onLogout }: BookProps) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Remount on orientation change to avoid flip-book DOM issues
   React.useEffect(() => {
     const mql = window.matchMedia("(orientation: portrait)");
     const handler = () => {
@@ -120,6 +108,62 @@ function Book({ onLogout }: BookProps) {
       }
     };
   }, []);
+
+  // Initial loading state timeout
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 350);
+    return () => clearTimeout(t);
+  }, []);
+
+  // After closing the editor, flip back to the Contents page (if requested)
+  // React.useEffect(() => {
+  //   if (!addingRecipe && pendingNav === "contents") {
+  //     let cancelled = false;
+  //     const tryFlip = (attempt: number) => {
+  //       if (cancelled) return;
+  //       const api = bookRef.current?.pageFlip?.();
+  //       console.log(api)
+  //       if (api && typeof api.flip === "function") {
+  //         allowProgrammaticFlipRef.current = true;
+  //         api.flip(CONTENTS_PAGE_INDEX);
+  //         setTimeout(() => {
+  //           allowProgrammaticFlipRef.current = false;
+  //         }, 300);
+  //         console.log("Good");
+  //         console.log("Attempt #" + attempt);
+  //         setPendingNav(null);
+  //       } else if (attempt < 10) {
+  //         console.log("Bad");
+  //         console.log("Attempt #" + attempt);
+  //         setTimeout(() => tryFlip(attempt + 1), 50);
+  //       } else {
+  //         console.log("Worse");
+  //         setPendingNav(null);
+  //       }
+  //     };
+  //     tryFlip(0);
+  //     return () => {
+  //       cancelled = true;
+  //     };
+  //   }
+  // }, [addingRecipe, pendingNav]);
+
+  // Stop interactions when locked except on elements explicitly allowed
+  const stopLockedInteractions = React.useCallback(
+    (e: React.SyntheticEvent) => {
+      if (!isLocked) return;
+      const el = e.target as HTMLElement | null;
+      const allowed =
+        el && typeof (el as any).closest === "function"
+          ? el.closest('[data-allow-locked="true"]')
+          : null;
+      if (!allowed) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    [isLocked]
+  );
 
   // Responsive sizing: one page ~ half screen width, preserve aspect, shrink on small windows
   const H_GAP = 16; // horizontal gap from viewport edges
@@ -155,7 +199,6 @@ function Book({ onLogout }: BookProps) {
       process.env.REACT_APP_SUPABASE_ANON_KEY
   );
 
-  const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
   const goToContents = React.useCallback(() => {
     if (isLocked) return; // prevent navigation while locked
     const api = bookRef.current?.pageFlip?.();
@@ -218,7 +261,7 @@ function Book({ onLogout }: BookProps) {
         </div>,
       ];
     }
-  return recipes.flatMap((recipe, index) => [
+    return recipes.flatMap((recipe, index) => [
       <div className="page" key={`${recipe.id}-img`}>
         <div
           className="recipe-image-full"
@@ -235,7 +278,9 @@ function Book({ onLogout }: BookProps) {
           tags={recipe.tags}
           pageNumber={index * 2 + 4}
           onGoToContents={goToContents}
-      canEdit={Boolean(recipe.ownerId && currentUserId && recipe.ownerId === currentUserId)}
+          canEdit={Boolean(
+            recipe.ownerId && currentUserId && recipe.ownerId === currentUserId
+          )}
           onEditRecipe={() => {
             if (isLocked) return;
             setLoading(true);
@@ -263,43 +308,12 @@ function Book({ onLogout }: BookProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipes, isSupabaseConfigured, isLocked, currentUserId]);
 
-  React.useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(t);
-  }, []);
-
   const contentsItems: ContentsItem[] = recipes.map((r, index) => ({
     title: r.title,
     page: index * 2 + 4,
     ingredients: r.ingredients,
-  tags: r.tags,
+    tags: r.tags,
   }));
-
-  React.useEffect(() => {
-    if (!addingRecipe && pendingNav === "contents") {
-      let cancelled = false;
-      const tryFlip = (attempt: number) => {
-        if (cancelled) return;
-        const api = bookRef.current?.pageFlip?.();
-        if (api && typeof api.flip === "function") {
-          allowProgrammaticFlipRef.current = true;
-          api.flip(CONTENTS_PAGE_INDEX);
-          setTimeout(() => {
-            allowProgrammaticFlipRef.current = false;
-          }, 300);
-          setPendingNav(null);
-        } else if (attempt < 10) {
-          setTimeout(() => tryFlip(attempt + 1), 50);
-        } else {
-          setPendingNav(null);
-        }
-      };
-      tryFlip(0);
-      return () => {
-        cancelled = true;
-      };
-    }
-  }, [addingRecipe, pendingNav]);
 
   const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index
   const goToRecipe = React.useCallback(
@@ -361,7 +375,8 @@ function Book({ onLogout }: BookProps) {
                   instructions: data.instructions,
                   tags: data.tags,
                 };
-                if (typeof image_path !== "undefined") updates.image_path = image_path;
+                if (typeof image_path !== "undefined")
+                  updates.image_path = image_path;
                 await updateRecipe(idNum, updates);
               } else {
                 await createRecipe({
@@ -501,7 +516,7 @@ function Book({ onLogout }: BookProps) {
           </div>
 
           {/* Contents page (single, scrollable) */}
-      <div className="page" key={`contents-single`}>
+          <div className="page" key={`contents-single`}>
             <ContentsPage
               items={contentsItems}
               startIndex={0}
@@ -510,7 +525,7 @@ function Book({ onLogout }: BookProps) {
               onAddRecipe={openAddRecipe}
               onSelect={goToRecipe}
               // onSelect removed per request
-        onLogout={onLogout}
+              onLogout={onLogout}
             />
           </div>
 
