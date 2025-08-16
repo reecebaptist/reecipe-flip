@@ -46,9 +46,13 @@ function Book({ onLogout }: BookProps) {
   const [desiredStartPage, setDesiredStartPage] = React.useState<number | null>(
     null
   );
+  const [pendingRecipeId, setPendingRecipeId] = React.useState<string | null>(
+    null
+  );
 
   // Fixed contents page index for programmatic navigation
   const CONTENTS_PAGE_INDEX = 4; // 0-based index of the Contents page in the flipbook
+  const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index
 
   const loadRecipes = React.useCallback(async () => {
     try {
@@ -118,6 +122,19 @@ function Book({ onLogout }: BookProps) {
   }, []);
 
   // Note: desiredStartPage is cleared in onFlip after we land on it
+
+  // If a specific recipe was requested, compute its page and set desiredStartPage after recipes load and editor closes
+  React.useEffect(() => {
+    if (!addingRecipe && pendingRecipeId) {
+      const idx = recipes.findIndex((r) => r.id === pendingRecipeId);
+      if (idx >= 0) {
+        setDesiredStartPage(RECIPE_FIRST_PAGE_INDEX + idx * 2);
+      } else {
+        setDesiredStartPage(CONTENTS_PAGE_INDEX);
+      }
+      setPendingRecipeId(null);
+    }
+  }, [addingRecipe, pendingRecipeId, recipes, RECIPE_FIRST_PAGE_INDEX]);
 
   // Stop interactions when locked except on elements explicitly allowed
   const stopLockedInteractions = React.useCallback(
@@ -286,7 +303,6 @@ function Book({ onLogout }: BookProps) {
     tags: r.tags,
   }));
 
-  const RECIPE_FIRST_PAGE_INDEX = CONTENTS_PAGE_INDEX + 2; // first recipe text page index
   const goToRecipe = React.useCallback(
     (recipeIndex: number) => {
       if (isLocked) return; // prevent navigation while locked
@@ -319,10 +335,18 @@ function Book({ onLogout }: BookProps) {
           height={pageHeight}
           isPortrait={isPortrait}
           onCancel={() => {
-            setEditingRecipe(null);
-            closeAddRecipe(true);
+            // Edit mode cancel -> go back to that recipe; Add mode cancel -> contents
+            if (editingRecipe?.id) {
+              setPendingRecipeId(String(editingRecipe.id));
+              setEditingRecipe(null);
+              closeAddRecipe(false);
+            } else {
+              setEditingRecipe(null);
+              closeAddRecipe(true);
+            }
           }}
           onSave={async (data) => {
+            const createdIdRef = { current: null as string | null };
             try {
               setLoading(true);
               const isEdit = !!editingRecipe?.id;
@@ -351,7 +375,7 @@ function Book({ onLogout }: BookProps) {
                   updates.image_path = image_path;
                 await updateRecipe(idNum, updates);
               } else {
-                await createRecipe({
+                const newRow = await createRecipe({
                   title: data.title,
                   prep_time: data.prepTime,
                   cook_time: data.cookTime,
@@ -361,14 +385,26 @@ function Book({ onLogout }: BookProps) {
                   is_published: true,
                   tags: data.tags,
                 });
+                // Queue navigation to the newly created recipe page
+                try {
+                  createdIdRef.current = String(newRow.id);
+                  setPendingRecipeId(createdIdRef.current);
+                } catch {}
               }
               await loadRecipes();
             } catch (e) {
               // eslint-disable-next-line no-console
               console.error("Save failed:", e);
             } finally {
-              setEditingRecipe(null);
-              closeAddRecipe(true);
+              // After save: Edit -> go to that recipe; Add -> go to new recipe; fallback contents
+              if (editingRecipe?.id) {
+                setPendingRecipeId(String(editingRecipe.id));
+                setEditingRecipe(null);
+                closeAddRecipe(false);
+              } else {
+                setEditingRecipe(null);
+                closeAddRecipe(!createdIdRef.current);
+              }
             }
           }}
           mode={editingRecipe ? "edit" : "add"}
